@@ -62,6 +62,8 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 		fuckingMatrixChanged = false;
 	}
 
+	if (fuckingMatrix && fuckingMatrixValid)
+		esp(pDevice);
 	
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -69,10 +71,6 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 	ImGui::Begin("Lick the dick :p");                      
 	{
 #ifdef _DEBUG
-		/*ImGui::InputInt("#quadcolor", (int*)&quad_color, 0, 0, ImGuiInputTextFlags_CharsHexadecimal);
-		ImGui::InputInt("#quad_x", &quad_x, 1, 0);
-		ImGui::InputInt("#quad_y", &quad_y, 1, 0);
-		ImGui::Text("%llx", StolenVar);*/
 		if (ImGui::Button("unload"))
 		{
 			FreeConsole();
@@ -80,19 +78,9 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 			CreateThread(0, 0, (LPTHREAD_START_ROUTINE)&cutout, 0, 0, 0);
 		}
 #endif
-		//ImGui::InputDouble("", (double*)&fuckingMatrix, 0, 0,"%.16f", ImGuiInputTextFlags_CharsHexadecimal);
-		//ImGui::InputText("...", (char*)xui.c_str(), 256, ImGuiInputTextFlags_CharsHexadecimal);
-		//fuckingMatrix = std::strtoull(xui.c_str(), nullptr, 16);
-		
-		//ImGui::SameLine();
-		//ImGui::Checkbox("#IsFuckingMatrixValid", &fuckingMatrixValid);
-		
-		esp(pDevice);
-		
-		
 
 	}
-	ImGui::End(); //main window end
+	ImGui::End();
 
 	ImGui::EndFrame();
 	ImGui::Render();

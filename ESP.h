@@ -109,27 +109,26 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 	for (char i = 0; i < heroes_slots; i++)
 		if (heroes[i])
 		{
-			auto pos = heroes[i]->GetSleleton()->GetPos();
-			D3DVECTOR vec3;
-			vec3.x = pos[0];
-			vec3.y = pos[1];
-			vec3.z = pos[2];
+			auto heroName = heroes[i]->Schema_DynamicBinding()->binaryName + 17;
+			auto heroTeam = heroes[i]->GetTeam();
+			auto heroVec3 =	heroes[i]->GetSleleton()->GetPos();
+
 			vec2 screen;
 			screen.x = 0;
 			screen.y = 0;
 
 
-			heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
+			heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
 
-			if (fuckingMatrix && fuckingMatrixValid)
 			{
 				long long temp = fuckingMatrix + 0x288;
-				WorldToScreen(vec3, &screen, (float*)temp, view.Width, view.Height);
+				WorldToScreen(*(D3DVECTOR*)heroVec3, &screen, (float*)temp, view.Width, view.Height);
 
 				int c = heroes[i]->GetModifiersCount();
+				auto ModPool = heroes[i]->GetModifiersPool();
 				for (int w = 0; w < c; w++)
 				{
-					if (!memcmp(heroes[i]->GetModifiersPool()->GetModifier(w)->Name(), "modifier_truesight", 18))
+					if (!memcmp(ModPool->GetModifier(w)->Name(), "modifier_truesight", 18))
 					{
 						DrawFilledRect11(screen.x, screen.y, 50, 50, quad_color, pDevice);
 					}
@@ -143,23 +142,23 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				Choosen = heroes[i];
 			if (heroes[i] != Choosen)
 				continue;
-			const char* nick = heroes[i]->Schema_DynamicBinding()->binaryName + 17;
+
 			if (heroes_isSeen[i])
 			{
 				DWORD temp = GetTickCount();
 				int seconds = (temp - heroes_times[i]) / 1000;
 				if (seconds > 60)
-					ImGui::Text("[%d]%s\tunseen %d:%d", heroes[i]->GetTeam(), nick, (((temp - heroes_times[i]) / 1000) / 60), (((temp - heroes_times[i]) / 1000) % 60) - 1 /*(*time_symbol[i] == 'm' ? 60000 :1000)*/, time_symbol[i]);
+					ImGui::Text("[%d]%s\tunseen %d:%d", heroTeam, heroName, (((temp - heroes_times[i]) / 1000) / 60), (((temp - heroes_times[i]) / 1000) % 60) - 1 /*(*time_symbol[i] == 'm' ? 60000 :1000)*/, time_symbol[i]);
 				else
-					ImGui::Text("[%d]%s\tunseen %d", heroes[i]->GetTeam(), nick, ((temp - heroes_times[i]) / 1000) - 1/*(*time_symbol[i] == 'm' ? 60000 :1000)*/);
+					ImGui::Text("[%d]%s\tunseen %d", heroTeam, heroName, ((temp - heroes_times[i]) / 1000) - 1/*(*time_symbol[i] == 'm' ? 60000 :1000)*/);
 			}
 			else
 			{
-				ImGui::TextColored(ImVec4(1.0, 0, 0, 1.0), "%s \tSEEN", nick);
+				ImGui::TextColored(ImVec4(1.0, 0, 0, 1.0), "%s \tSEEN", heroName);
 				heroes_times[i] = GetTickCount();
 			}
 #ifdef _DEBUG
-			ImGui::Text("[%d]%s\t%s\t%llx", heroes[i]->GetTeam(), heroes[i]->Schema_DynamicBinding()->binaryName + 17, heroes_isSeen[i] ? "seen" : "0", (__int64*)heroes[i]);
+			ImGui::Text("[%d]%s\t%s\t%llx", heroTeam, heroName, heroes_isSeen[i] ? "seen" : "0", (__int64*)heroes[i]);
 #endif
 		}
 }
