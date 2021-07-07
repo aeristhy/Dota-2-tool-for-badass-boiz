@@ -113,10 +113,23 @@ public:
 	}
 };
 
+class Skeleton
+{
+public:
+	__inline float* GetPos()
+	{
+		return (float*)((char*)this + 0x10);
+	}
+};
+
 class CBaseEntity
 {
 public:
     virtual CSchemaClassBinding* Schema_DynamicBinding(void);
+	__inline Skeleton* GetSleleton()
+	{
+		return (Skeleton*)*(__int64*)((char*)this + 0x310);
+	}
 	__inline DOTATeam_t GetTeam()
 	{
 		return *((DOTATeam_t*)this + 0x3AF);
@@ -166,10 +179,10 @@ client.dll+0x194FC57
 class CBaseAblity
 {
 public:
-	__inline __int32 GetCastRange()
+	/*__inline __int32 GetCastRange()
 	{
 		return CalculateCastRange((__int64*)this);
-	}
+	}*/
 	__inline char GetLevel()
 	{
 		return *((char*)this + 0x5A0);

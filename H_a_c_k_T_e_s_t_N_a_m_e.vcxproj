@@ -170,9 +170,9 @@
     <ClInclude Include="CEntityInstance.h" />
     <ClInclude Include="CGameEntitySystem.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ESP.h" />
     <ClInclude Include="GlobalVars.h" />
     <ClInclude Include="CustomTypes.h" />
-    <ClInclude Include="Eject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IAppSystem.h" />
     <ClInclude Include="Init.h" />
@@ -185,7 +185,6 @@
     <ClInclude Include="vector.h" />
     <ClInclude Include="vmt.h" />
     <ClInclude Include="WndProc.h" />
-    <ClInclude Include="WorldToScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\imgui\backends\imgui_impl_dx9.cpp">

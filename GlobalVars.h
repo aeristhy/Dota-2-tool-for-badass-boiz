@@ -56,7 +56,3 @@ FLOAT      _fovy;
 //FLOAT      _zf;
 
 bool edit = false;
-
-CGameEntitySystem* entity;
-
-VMT* entityVMT;
