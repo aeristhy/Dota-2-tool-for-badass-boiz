@@ -170,13 +170,13 @@
     <ClInclude Include="CEntityInstance.h" />
     <ClInclude Include="CGameEntitySystem.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="connector.h" />
     <ClInclude Include="ESP.h" />
     <ClInclude Include="GlobalVars.h" />
     <ClInclude Include="CustomTypes.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IAppSystem.h" />
     <ClInclude Include="Init.h" />
-    <ClInclude Include="init_exports.h" />
     <ClInclude Include="PatternFinder.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Render.h" />

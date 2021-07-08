@@ -63,11 +63,11 @@
     <ClInclude Include="CDOTA_Camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="init_exports.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="ESP.h">
       <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="connector.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

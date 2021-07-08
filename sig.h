@@ -1,5 +1,7 @@
 #pragma once
-
+/// <summary>
+/// god, i swear, i'll deal with this zombie code sometime :CCC
+/// </summary>
 namespace d //database
 {
 #define ArrayCapacity 50
@@ -32,24 +34,11 @@ namespace d //database
 		*/
 		Module	[n::VBE]	= "client.dll";
 		Offset	[n::VBE]	= 0x11;
-		Vtable	[n::VBE]	= 0x678 / 8; //slot
+		Vtable	[n::VBE]	= 207; //slot
 		Mask	[n::VBE]	= "\x8B\xFA\x48\x8B\xD9\x48\x85\xC0\x74\x0F\x8B\x40\x70\x83\xC0\xFA\x83\xF8\x01";
 		MaskSz	[n::VBE]	= sizeof("\x8B\xFA\x48\x8B\xD9\x48\x85\xC0\x74\x0F\x8B\x40\x70\x83\xC0\xFA\x83\xF8\x01")-1;
 		//===================================================================================================
 #pragma endregion CBaseEntity
-#pragma region entity 
-		/*===================================================================================================
-		client.dll.text+A7C010 - 48 8B 05 897ABD02     - mov rax,[client.dll+3654AA0]
-		client.dll.text+A7C017 - 48 8B 80 700E0000     - mov rax,[rax+00000E70]
-		client.dll.text+A7C01E - C3                    - ret
-		*/
-		Module	[n::Entity] = "client.dll";
-		Offset	[n::Entity] = 0;
-		Vtable	[n::Entity] = 25; //slot
-		Mask	[n::Entity] = "\x48\x8B\x05\x89\x7A\xBD\x02\x48\x8B\x80\x70\x0E\x00\x00\xC3";
-		MaskSz	[n::Entity] = sizeof("\x48\x8B\x05\x89\x7A\xBD\x02\x48\x8B\x80\x70\x0E\x00\x00\xC3")-1;
-		//===================================================================================================
-#pragma endregion CGameEntitySystem
 
 
 	}

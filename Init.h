@@ -94,69 +94,45 @@ void Init()
     while (!ProcessWindowHandle)
         ProcessWindowHandle = FindWindowA("SDL_app", 0);
 
-    TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
-                    //hk.set_hook((char*)GetProcAddress(GetModuleHandleA("d3dx9_43.dll"), "D3DXMatrixPerspectiveFovLH"), 15, (char*)hk_D3DXMatrixPerspectiveFovLH,(char**)&oHkCreateSomethingElseAboutSomethingElseSoShutYourFace);
-    
-
-
 #ifdef _DEBUG
     AllocConsole();
     freopen("CONOUT$", "a+", stdout);
 #endif
-    
 
-    /*
-    //////////////////////////////////////////////
-    Address of signature = client.dll + 0x0099E5DF
-"\xFF\x90\x00\x00\x00\x00\x84\xC0\x74\x00\xFF\x83", "xx????xxx?xx"
-"FF 90 ? ? ? ? 84 C0 74 ? FF 83" 16 bytes
-
-Address of signature = client.dll + 0x0099E590
-"\x48\x89\x00\x00\x00\x56\x48\x83\xEC\x00\x48\x8B\x00\x41\x8B\x00\xB9\x00\x00\x00\x00\x48\x8B", "xx???xxxx?xx?xx?x????xx"
-"48 89 ? ? ? 56 48 83 EC ? 48 8B ? 41 8B ? B9 ? ? ? ? 48 8B"
-/////////////////////////////
-
-
-Address of signature = client.dll + 0x0099E630
-"\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x8B\x00\x41\x8B\x00\x25", "xx???xxxx?xx?xx?x"
-"48 89 ? ? ? 57 48 83 EC ? 48 8B ? 41 8B ? 25"
-
-
-    */
-    auto q1 = PatternFinder::PatternScan((char*)"client.dll", "48 8B 01 48 8B 51 ?? 48 FF");
-    auto q2 = PatternFinder::PatternScan((char*)"engine2.dll", "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
-    
-    
-    auto OnAddEntityFunc = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
-    auto OnRemoveEntityFunc = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
-    CalculateCastRange = (t2)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
+    auto InBattleCameraFunc     = PatternFinder::PatternScan((char*)"client.dll", "48 8B 01 48 8B 51 ?? 48 FF");
+    auto WhereToGetViewMatrix   = PatternFinder::PatternScan((char*)"engine2.dll", "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
+    auto OnAddEntityFunc        = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
+    auto OnRemoveEntityFunc     = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
+    CalculateCastRange      = (t2)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
+    //i dont even remember what the //// is CalculateCastRange.....................
 #ifdef _DEBUG
-    if (OnAddEntityFunc == nullptr)
-        printf("\nERROR: OnAddEntity sig not found");
+    if (InBattleCameraFunc == nullptr)///////////////////////
+        printf("\nERROR: InBattleCameraFunc sig not found");
+    else
+        printf("\InBattleCameraFunc: %llx", InBattleCameraFunc);
+    if (WhereToGetViewMatrix == nullptr)/////////////////////
+        printf("\nERROR: WhereToGetViewMatrix sig not found");
+    else
+        printf("\WhereToGetViewMatrix: %llx", WhereToGetViewMatrix);
+    if (OnAddEntityFunc == nullptr)//////////////////////////
+        printf("\nERROR: OnAddEntityFunc sig not found");
     else
         printf("\nOnAddEntity: %llx", OnAddEntityFunc);
-    if (OnRemoveEntityFunc == nullptr)
+    if (OnRemoveEntityFunc == nullptr)///////////////////////
         printf("\nERROR: OnRemoveEntity sig not found");
     else
         printf("\nOnRemoveEntity: %llx", OnRemoveEntityFunc);
-    if (CalculateCastRange == nullptr)
+    if (CalculateCastRange == nullptr)///////////////////////
         printf("\nERROR: GetCastRange sig not found");
     else
         printf("\nGetCastRange: %llx", CalculateCastRange);
-
-
 #endif
     
     hk.set_hook((char*)OnAddEntityFunc, 16, (char*)OnAddEntity, (char**)&OnAddEntityRet);
     hk.set_hook((char*)OnRemoveEntityFunc, 16, (char*)OnRemoveEntity, (char**)&OnRemoveEntityRet);
-    hk.set_reg_stealer((char*)q1, 11, (char*)&StolenVar, r::rcx);
-    hk.set_reg_stealer_reverse((char*)q2, 16, (char*)&fuckingMatrix, r::rax);
-
-    //GetModules();
-    //entityVMT = new VMT(entity); //loads CGameEntitySystem VMT into vmt.entity
-    ////entityVMT->HookVMT(OnAddEntity, 14);//14
-    //entityVMT->HookVMT(OnRemoveEntity, 15);//15
-    //entityVMT->ApplyVMT(entity);
+    hk.set_reg_stealer((char*)InBattleCameraFunc, 11, (char*)&StolenVar, r::rcx);
+    hk.set_reg_stealer_reverse((char*)WhereToGetViewMatrix, 16, (char*)&fuckingMatrix, r::rax);
+    TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
 
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 }
