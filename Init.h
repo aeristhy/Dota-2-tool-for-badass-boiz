@@ -103,16 +103,7 @@ void Init()
     AllocConsole();
     freopen("CONOUT$", "a+", stdout);
 #endif
-    //printf("\n%llx", PatternFinder::PatternScan((char*)"client.dll", "48 8B 01 48 8B 51 ?? 48 FF")); //-- робит, юзаем
-    auto qq = PatternFinder::PatternScan((char*)"client.dll", "48 8B 01 48 8B 51 ?? 48 FF");
-    auto q2 = PatternFinder::PatternScan((char*)"engine2.dll", "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
-
-#ifdef _DEBUG
-    printf("\n%llx", q2);
-#endif
-
-    hk.set_reg_stealer          ((char*)qq,11,  (char*)&StolenVar,      r::rcx); 
-    hk.set_reg_stealer_reverse  ((char*)q2, 16, (char*)&fuckingMatrix,  r::rax);
+    
 
     /*
     //////////////////////////////////////////////
@@ -132,7 +123,10 @@ Address of signature = client.dll + 0x0099E630
 
 
     */
-
+    auto q1 = PatternFinder::PatternScan((char*)"client.dll", "48 8B 01 48 8B 51 ?? 48 FF");
+    auto q2 = PatternFinder::PatternScan((char*)"engine2.dll", "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
+    
+    
     auto OnAddEntityFunc = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
     auto OnRemoveEntityFunc = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
     CalculateCastRange = (t2)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
@@ -155,6 +149,8 @@ Address of signature = client.dll + 0x0099E630
     
     hk.set_hook((char*)OnAddEntityFunc, 16, (char*)OnAddEntity, (char**)&OnAddEntityRet);
     hk.set_hook((char*)OnRemoveEntityFunc, 16, (char*)OnRemoveEntity, (char**)&OnRemoveEntityRet);
+    hk.set_reg_stealer((char*)q1, 11, (char*)&StolenVar, r::rcx);
+    hk.set_reg_stealer_reverse((char*)q2, 16, (char*)&fuckingMatrix, r::rax);
 
     //GetModules();
     //entityVMT = new VMT(entity); //loads CGameEntitySystem VMT into vmt.entity

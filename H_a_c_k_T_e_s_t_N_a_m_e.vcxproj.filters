@@ -39,9 +39,6 @@
     <ClInclude Include="sig.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="vmt.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="IAppSystem.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

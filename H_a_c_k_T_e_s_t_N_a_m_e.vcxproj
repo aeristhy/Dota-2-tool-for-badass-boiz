@@ -183,7 +183,6 @@
     <ClInclude Include="Schema.h" />
     <ClInclude Include="sig.h" />
     <ClInclude Include="vector.h" />
-    <ClInclude Include="vmt.h" />
     <ClInclude Include="WndProc.h" />
   </ItemGroup>
   <ItemGroup>

@@ -138,39 +138,9 @@ class connector {
 		*(from + 5) = 0;
 		memcpy(from + 6, &to, 8);
 
-		log("\nset [E9] jump from %llx to %llx ...", from, to);
+		log("\nset [0xFF 25] jump from %llx to %llx ...", from, to);
 #endif
 
-	}
-
-	void makeCall(char* to, char* from)
-	{
-		int jumpaddr = 0;
-		//if ((int)from < (int)to)
-			//to - from - 5
-		jumpaddr = to - from - 5;
-#ifdef __its32
-		log("\nset [E8] call from %X to %X ...", from, to);
-#elif  __its64
-		log("\nset [E8] call from %llx to %llx ...", from, to);
-#endif
-		//to - from - 5
-		if (!memset(from, asm_call, 1) || !memcpy(from + 1, (int*)&jumpaddr, 4))//записываем джамп-инструкцию
-			log(" memset returned zero\t ??wtf???");
-		else
-			log(" ok");
-
-	}
-
-	void makeCall_s(char* function)
-	{
-		makeCall(function, cave + cave_actual_offset);
-		cave_actual_offset += 5;
-	}
-	void makeJump_s()
-	{
-		makeJump(original_code_address[slot] + 5, cave + cave_actual_offset);
-		cave_actual_offset += 5;
 	}
 
 	void setOriginalCode()
@@ -195,6 +165,7 @@ class connector {
 
 	void SetStealerCode(char* address, int sz, char* container, r RegToSteal)
 	{
+		//a little crutch to bypass unavailable rax steal because of storing to rax by default
 		if (RegToSteal == r::rax)
 		{
 			memset(cave + cave_actual_offset, 0x51, 1);
@@ -377,31 +348,13 @@ public:
 			memset(address + i, 0x90, 1);
 		makeJump(cave + cave_actual_offset, address);
 		backVP(address, sz);
-
-		//setOriginalCode();
-
-		//setPrologue();
-
 		makeJump(callback_function, cave + cave_actual_offset);
 		cave_actual_offset += 14;
-		//makeCall_s(callback_function);
-		/*int* retAddr = findRetAddr(callback_function);
-		setVP((char*)retAddr, 4);
-		setRetAddr(callback_function);
-		backVP((char*)retAddr, 4);*/
+
 		*o = cave + cave_actual_offset;
 		setOriginalCode();
 		makeJump(address + sz, cave + cave_actual_offset);
 		cave_actual_offset += 14;
-
-		//setEpilogue();
-
-
-
-		//makeJump_s();
-
-		/*for (int i = 0; i < sz - 5; i++)
-			memset(address+i, 0x90, 1);*/
 
 		log("\n------------done-----------------");
 
@@ -413,13 +366,6 @@ public:
 
 	int set_reg_stealer(char* address, int sz, char* container, r RegToSteal)
 	{
-		/*
-F7F6EC0000 - 50						- push rax
-F7F6EC0002 - 48 B8 5000ECF6F7000000 - mov rax,000000F7F6EC0050
-F7F6EC0016 - 48 89 08				- mov [rax],rcx
-F7F6EC0019 - 58						- pop rax
-F7F6EC001B - EB E3					- jmp F7F6EC0000
-		*/
 		setVP(address, sz);
 		GetSlot();
 
@@ -447,16 +393,9 @@ F7F6EC001B - EB E3					- jmp F7F6EC0000
 		backVP(address, sz);
 		return slot;
 	}
-
+	//some times all you need to do, it is execute original code before your asm injection
 	int set_reg_stealer_reverse(char* address, int sz, char* container, r RegToSteal)
 	{
-		/*
-F7F6EC0000 - 50						- push rax
-F7F6EC0002 - 48 B8 5000ECF6F7000000 - mov rax,000000F7F6EC0050
-F7F6EC0016 - 48 89 08				- mov [rax],rcx
-F7F6EC0019 - 58						- pop rax
-F7F6EC001B - EB E3					- jmp F7F6EC0000
-		*/
 		setVP(address, sz);
 		GetSlot();
 
@@ -484,8 +423,8 @@ F7F6EC001B - EB E3					- jmp F7F6EC0000
 		cave_actual_offset += 14;
 		backVP(address, sz);
 	}
-
 #endif
+
 	~connector()
 	{
 #ifdef __its64
@@ -506,6 +445,9 @@ F7F6EC001B - EB E3					- jmp F7F6EC0000
 		log("\n\nSee you around!");
 	}
 
+	//old as fuck. Elder part of code, made before i realize, how to make useful and comfortable hook toolkit.
+	// 	   It totally rethink and reworked. Only same idea can be seen
+	// 	   ~2018 year, my ~1.5 year of coding c++. Just switched from scripts
 	//int makeConnector(char* from, int sz, char* memory_card = 0)
 	//{
 	//	unsigned char iterator = 0;
@@ -553,30 +495,3 @@ F7F6EC001B - EB E3					- jmp F7F6EC0000
 	//	return iterator;
 	//}
 };
-
-
-/*
-
-rax == hero pointer
-*rax == baseCombatCharacter vtable
-client.dll.text+1A17BC8 - 44 8B 64 24 3C        - mov r12d,[rsp+3C]
-client.dll.text+1A17BCD - 48 8D 15 CC853B01     - lea rdx,[client.dll.rdata+DC61A0]
-client.dll.text+1A17BD4 - 44 8B 6C 24 40        - mov r13d,[rsp+40]
-client.dll.text+1A17BD9 - 48 8D 8D A0000000     - lea rcx,[rbp+000000A0]
-client.dll.text+1A17BE0 - 45 8B CC              - mov r9d,r12d
-client.dll.text+1A17BE3 - 45 8B C5              - mov r8d,r13d
-client.dll.text+1A17BE6 - E8 853390FE           - call client.dll.text+31AF70
-client.dll.text+1A17BEB - 48 8B 85 A4000000     - mov rax,[rbp+000000A4]
-client.dll.text+1A17BF2 - 0FBA E0 1E            - bt eax,1E
-client.dll.text+1A17BF6 - 73 09                 - jae client.dll.text+1A17C01
-client.dll.text+1A17BF8 - 48 8D 95 A8000000     - lea rdx,[rbp+000000A8]
-client.dll.text+1A17BFF - EB 10                 - jmp client.dll.text+1A17C11
-client.dll.text+1A17C01 - A9 FFFFFF3F           - test eax,3FFFFFFF
-client.dll.text+1A17C06 - 49 8B D7              - mov rdx,r15
-client.dll.text+1A17C09 - 48 0F47 95 A8000000   - cmova rdx,[rbp+000000A8]
-client.dll.text+1A17C11 - 48 8B 8B 88000000     - mov rcx,[rbx+00000088]
-client.dll.text+1A17C18 - 41 B8 02000000        - mov r8d,00000002
-client.dll.text+1A17C1E - 48 8B 01              - mov rax,[rcx]
-client.dll.text+1A17C21 - FF 90 70020000        - call qword ptr [rax+00000270]
-
-*/
