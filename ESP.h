@@ -172,6 +172,8 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 	}
 	else
 	{
+		if (DrawHealthPanel)
+			ImGui::Begin("HealthPanel");
 		auto localPlayerTeam = LocalPlayer->GetTeam();
 		auto EnemyTeam = localPlayerTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT;
 		for (char i = 0; i < heroes_slots; i++)
@@ -185,11 +187,14 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				screen.x = 0;
 				screen.y = 0;
 
+				long long temp = fuckingMatrix + 0x288;
+				WorldToScreen(*(D3DVECTOR*)heroVec3, &screen, (float*)temp, view.Width, view.Height);
+
+
 				if (heroTeam != EnemyTeam)
 				{
 					heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
-					long long temp = fuckingMatrix + 0x288;
-					WorldToScreen(*(D3DVECTOR*)heroVec3, &screen, (float*)temp, view.Width, view.Height);
+					
 
 					int c = heroes[i]->GetModifiersCount();
 					auto ModPool = heroes[i]->GetModifiersPool();
@@ -204,7 +209,39 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 					if (heroes_isSeen[i])
 						DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
 				}
+				else //if heroTeam==EnemyTeam
+				{
+					if (DrawHealthPanel)
+					{
+						char HeroName[7];
+						memcpy(HeroName, heroName, 6);
+						HeroName[6] = 0;
+						auto currentHealth = heroes[i]->GetCurrentHealth();
+						ImVec4 color;
+						color.x = 1.0;
+						color.w = 0.2;
+						color.y = 0.2;
+						color.z = 0.2;
+						if (currentHealth >= 1000)
+						{
+							color.y = 0.0;
+							color.z = 1.0;
+							
+						}
+						if (currentHealth <= 500)
+						{
+							color.y = 1.0;
+							color.z = 0.0;
+						}
+						ImGui::TextColored(color,"%s\t%d/%d", HeroName, currentHealth, heroes[i]->GetMaxHealth());
+					}
+					if (TrueHero)
+						DrawFilledRect11(screen.x, screen.y-10, 50, 10, 0xFF000000, pDevice);
+				}
 			}
+		if (DrawHealthPanel)
+			ImGui::End();
+		
 	}
 }
 

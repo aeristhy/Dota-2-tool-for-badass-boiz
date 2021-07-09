@@ -130,6 +130,14 @@ public:
 	{
 		return (Skeleton*)*(__int64*)((char*)this + 0x310);
 	}
+	__inline __int32 GetMaxHealth()
+	{
+		return *(__int32*)((char*)this + 0x328);
+	}
+	__inline __int32 GetCurrentHealth()
+	{
+		return *(__int32*)((char*)this + 0x32C);
+	}
 	__inline DOTATeam_t GetTeam()
 	{
 		return *((DOTATeam_t*)this + 0x3AF);

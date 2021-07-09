@@ -30,11 +30,14 @@ bool	fuckingMatrixChanged = 0;
 bool	fuckingMatrixValid = 0;
 __int64 fuckingMatrixLastValue = 0;
 
+bool DrawHealthPanel = 0;
+bool TrueHero = 0;
 
+bool isMenuOpen = 0;
 
 /*
 settings visual
 */
 
-DWORD	quad_color = 0x990000FF;
-DWORD	quad_color2 = 0x99FFFF00;
+DWORD	quad_color = 0x000000FF;
+DWORD	quad_color2 = 0x00FFFF00;

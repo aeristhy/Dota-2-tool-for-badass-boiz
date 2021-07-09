@@ -43,6 +43,14 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 		RenderInitiated = 1;
 	}
 
+	/*
+	DrawFilledRect11(0, 0, 50, 20, 0xFF000000, pDevice); black
+	DrawFilledRect11(0, 50, 50, 20, 0x00FF0000, pDevice); red
+	DrawFilledRect11(0, 100, 50, 20, 0x0000FF00, pDevice); green
+	DrawFilledRect11(0, 150, 50, 20, 0x000000FF, pDevice); blue
+	*/
+
+
 	if (fuckingMatrix == fuckingMatrixLastValue)
 		fuckingMatrixChanged = false;
 	else
@@ -59,13 +67,14 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 			fuckingMatrixValid = false;
 		fuckingMatrixChanged = false;
 	}
-
-	if (fuckingMatrix && fuckingMatrixValid)
-		esp(pDevice);
 	
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	if (fuckingMatrix && fuckingMatrixValid)
+		esp(pDevice);
+
 #ifdef _DEBUG
 	ImGui::Begin("Lick the dick :p");                      
 	{
@@ -81,7 +90,15 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 	ImGui::End();
 #endif
 	ImGui::Begin("##Placeholer");
+	ImGui::Text("Health panel");
+	ImGui::SameLine();
+	ImGui::Checkbox("##Heath_Panel_checkbox", &DrawHealthPanel);
+	ImGui::Text("True hero");
+	ImGui::SameLine();
+	ImGui::Checkbox("##True_hero_checkbox", &TrueHero);
 	ImGui::End();
+
+
 	ImGui::EndFrame();
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
