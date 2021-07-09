@@ -5,11 +5,10 @@ Is under truesight effect (like sentry, gem)
 
 Blue quad -- sentry affected  
 Yellow quad -- spotted by enemy  
-Black brick -- marked true hero
-![til](demo.gif)
-
+Black brick -- marked true hero  
+![til](demo.gif)  
 ![til](Screenshot_16.png)
-![til](Screenshot_2.png)
+![til](Screenshot_2.png)  
 
 
 TODO list:   
