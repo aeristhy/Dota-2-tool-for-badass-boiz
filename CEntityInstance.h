@@ -27,7 +27,7 @@ enum OverlayFlags_t : unsigned long long
 
 enum DOTATeam_t : char {
 	DOTA_TEAM_INVALID = -1,
-	DOTA_TEAM_FIRST = 2,
+	//DOTA_TEAM_FIRST = 2,
 	DOTA_TEAM_RADIANT = 2, //Radiant team.
 	DOTA_TEAM_DIRE = 3, 	//Dire team.
 	DOTA_TEAM_NEUTRALS = 4, //Neutral.

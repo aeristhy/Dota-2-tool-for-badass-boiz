@@ -3,9 +3,7 @@
 #include "GlobalVars.h"
 #include "sig.h"
 //#include "Eject.h"
-#include "../imgui/imgui.h"
-#include "../imgui/backends/imgui_impl_dx9.h"
-#include "../imgui/backends/imgui_impl_win32.h"
+
 #include "ESP.h"
 #include <bitset>
 
@@ -68,20 +66,22 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+#ifdef _DEBUG
 	ImGui::Begin("Lick the dick :p");                      
 	{
-#ifdef _DEBUG
+
 		if (ImGui::Button("unload"))
 		{
 			FreeConsole();
 			hk.BreakTrampoline(TrampoToBreak);
 			CreateThread(0, 0, (LPTHREAD_START_ROUTINE)&cutout, 0, 0, 0);
 		}
-#endif
-
+		debugWindow();
 	}
 	ImGui::End();
-
+#endif
+	ImGui::Begin("##Placeholer");
+	ImGui::End();
 	ImGui::EndFrame();
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());

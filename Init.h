@@ -19,13 +19,12 @@ void SetRenderingEnabled(void*, bool);
 
 void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
 {
+    
     bool alreadyExists = false;
     const char* typeName = ptr->Schema_DynamicBinding()->binaryName;
-#ifdef _DEBUG
-    printf("\nEntity added: %s [%d]%s", typeName,ptr->GetTeam(), TeamName(ptr->GetTeam()));
-#endif
     if (strstr(typeName, "DOTA_Unit_Hero"))
     {
+
         for (int meow = 0; meow < heroes_slots; meow++)
         {
             if (!heroes[meow])
@@ -48,7 +47,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
                     continue;
                 heroes[meow] = ptr;
 #ifdef _DEBUG
-                printf("\n[%d]%s %llx", meow, typeName,ptr);
+                printf("\n[%d]%s %llx || i:%X", meow, typeName,ptr, index);
 #endif
                 break;
             }
@@ -77,6 +76,15 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
             }
         }
     }
+    bool IsNoHeroes = 1;
+    for (char i = 0; i < heroes_slots; i++)
+        if (heroes[i])
+        {
+            IsNoHeroes = 0;
+            break;
+        }
+    if (IsNoHeroes)
+        LocalPlayer = 0;
 
     return OnRemoveEntityRet((__int64*)ecx, (__int64*)ptr, index);
 }
@@ -109,11 +117,11 @@ void Init()
     if (InBattleCameraFunc == nullptr)///////////////////////
         printf("\nERROR: InBattleCameraFunc sig not found");
     else
-        printf("\InBattleCameraFunc: %llx", InBattleCameraFunc);
+        printf("\nInBattleCameraFunc: %llx", InBattleCameraFunc);
     if (WhereToGetViewMatrix == nullptr)/////////////////////
         printf("\nERROR: WhereToGetViewMatrix sig not found");
     else
-        printf("\WhereToGetViewMatrix: %llx", WhereToGetViewMatrix);
+        printf("\nWhereToGetViewMatrix: %llx", WhereToGetViewMatrix);
     if (OnAddEntityFunc == nullptr)//////////////////////////
         printf("\nERROR: OnAddEntityFunc sig not found");
     else

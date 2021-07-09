@@ -1,5 +1,9 @@
 #pragma once
 #include "GlobalVars.h"
+#include "../imgui/imgui.h"
+#include "../imgui/backends/imgui_impl_dx9.h"
+#include "../imgui/backends/imgui_impl_win32.h"
+
 
 typedef bool(__thiscall* VBE)(unsigned __int64*, DOTATeam_t);
 
@@ -105,60 +109,114 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 {
 	D3DVIEWPORT9 view;
 	pDevice->GetViewport(&view);
+	//if (!IsLocalPlayerFound) //only works with real players. Bots and disconnected players counts as local player. (siet)
+	//{
+	//	bool hasBothTeam = 0;
+	//	bool hasDire = 0;
+	//	bool hasRadiant = 0;
+	//	for (char i = 0; i < heroes_slots; i++)
+	//	{
+	//		if (!heroes[i])
+	//			continue;
+	//		auto heroTeam = heroes[i]->GetTeam();
+	//		heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
+	//		if (heroes_isSeen[i])
+	//		{
+	//			if (!hasDire && heroTeam == DOTATeam_t::DOTA_TEAM_DIRE)
+	//				hasDire = 1;
+	//			if (!hasRadiant && heroTeam == DOTATeam_t::DOTA_TEAM_RADIANT)
+	//				hasRadiant = 1;
+	//			if (hasRadiant && hasDire)
+	//			{
+	//				hasBothTeam = 1;
+	//				break;
+	//			}
+	//		}
+	//	}
+	//	if (hasBothTeam)
+	//	{
+	//		
+	//		for (char i = 0; i < heroes_slots; i++)
+	//		{
+	//			if (!heroes[i])
+	//				continue;
+	//			bool AloneInTeam = 1;
+	//			auto heroTeam = heroes[i]->GetTeam();
+	//			for (char q = 0; q < heroes_slots; q++)
+	//			{
+	//				if (!heroes[q])
+	//					continue;
+	//				if (q != i && heroTeam == heroes[q]->GetTeam())
+	//					AloneInTeam = 0;
+	//			}
+	//			if (AloneInTeam)
+	//			{
+	//				IsLocalPlayerFound = 1;
+	//				LocalPlayer = heroes[i];
+	//			}
+	//		}
+	//		
+	//	}
+	//}
+	//else
+	
+	//ужасное шаманство, проведя которое, придумал вариант проще и лучше. Урф.
+	if (!LocalPlayer)
+	{
+		for (char i = 0; i < 5; i++)
+		{
+			if (heroes[i])
+				if (VisibleByEnemy((VBE**)heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT)))
+					LocalPlayer = heroes[i];
+		}
+	}
+	else
+	{
+		auto localPlayerTeam = LocalPlayer->GetTeam();
+		auto EnemyTeam = localPlayerTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT;
+		for (char i = 0; i < heroes_slots; i++)
+			if (heroes[i])
+			{	
+				auto heroName = heroes[i]->Schema_DynamicBinding()->binaryName + 17;
+				auto heroTeam = heroes[i]->GetTeam();
+				auto heroVec3 = heroes[i]->GetSleleton()->GetPos();
 
+				vec2 screen;
+				screen.x = 0;
+				screen.y = 0;
+
+				if (heroTeam != EnemyTeam)
+				{
+					heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
+					long long temp = fuckingMatrix + 0x288;
+					WorldToScreen(*(D3DVECTOR*)heroVec3, &screen, (float*)temp, view.Width, view.Height);
+
+					int c = heroes[i]->GetModifiersCount();
+					auto ModPool = heroes[i]->GetModifiersPool();
+					for (int w = 0; w < c; w++)
+					{
+						if (!memcmp(ModPool->GetModifier(w)->Name(), "modifier_truesight", 18))
+						{
+							DrawFilledRect11(screen.x, screen.y, 50, 50, quad_color, pDevice);
+						}
+					}
+
+					if (heroes_isSeen[i])
+						DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
+				}
+			}
+	}
+}
+
+#ifdef _DEBUG
+void debugWindow()
+{
 	for (char i = 0; i < heroes_slots; i++)
 		if (heroes[i])
 		{
 			auto heroName = heroes[i]->Schema_DynamicBinding()->binaryName + 17;
 			auto heroTeam = heroes[i]->GetTeam();
-			auto heroVec3 =	heroes[i]->GetSleleton()->GetPos();
-
-			vec2 screen;
-			screen.x = 0;
-			screen.y = 0;
-
-
-			heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
-
-			{
-				long long temp = fuckingMatrix + 0x288;
-				WorldToScreen(*(D3DVECTOR*)heroVec3, &screen, (float*)temp, view.Width, view.Height);
-
-				int c = heroes[i]->GetModifiersCount();
-				auto ModPool = heroes[i]->GetModifiersPool();
-				for (int w = 0; w < c; w++)
-				{
-					if (!memcmp(ModPool->GetModifier(w)->Name(), "modifier_truesight", 18))
-					{
-						DrawFilledRect11(screen.x, screen.y, 50, 50, quad_color, pDevice);
-					}
-				}
-
-				if (heroes_isSeen[i])
-					DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
-			}
-
-			if (heroes_isSeen[i])
-				Choosen = heroes[i];
-			if (heroes[i] != Choosen)
-				continue;
-
-			if (heroes_isSeen[i])
-			{
-				DWORD temp = GetTickCount();
-				int seconds = (temp - heroes_times[i]) / 1000;
-				if (seconds > 60)
-					ImGui::Text("[%d]%s\tunseen %d:%d", heroTeam, heroName, (((temp - heroes_times[i]) / 1000) / 60), (((temp - heroes_times[i]) / 1000) % 60) - 1 /*(*time_symbol[i] == 'm' ? 60000 :1000)*/, time_symbol[i]);
-				else
-					ImGui::Text("[%d]%s\tunseen %d", heroTeam, heroName, ((temp - heroes_times[i]) / 1000) - 1/*(*time_symbol[i] == 'm' ? 60000 :1000)*/);
-			}
-			else
-			{
-				ImGui::TextColored(ImVec4(1.0, 0, 0, 1.0), "%s \tSEEN", heroName);
-				heroes_times[i] = GetTickCount();
-			}
-#ifdef _DEBUG
 			ImGui::Text("[%d]%s\t%s\t%llx", heroTeam, heroName, heroes_isSeen[i] ? "seen" : "0", (__int64*)heroes[i]);
-#endif
 		}
 }
+#endif
