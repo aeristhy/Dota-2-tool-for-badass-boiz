@@ -12,4 +12,4 @@ Black brick -- marked true hero
 
 im totaly tired off playing with brainless agressive assholes and really DO NOT WANT ANY TO DEVELOP ANYTHING TO DOTA 2. 
 This community is hopeless. Develop it for free i will not evermore. Also im f/////ng noname so nobody will donate me to stimulate get to work.
-So this garbage is DOTA's heritage from me. Die in hell, dota2 toxic community. Hope, we will never see again and i never get back to work with it. 
+So this garbage is DOTA's heritage from me. Die in hell, dota2 toxic community. Hope, we will never see again and i never get back to work with it. Or say word like this. (oh god)
