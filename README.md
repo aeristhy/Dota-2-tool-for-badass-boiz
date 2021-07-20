@@ -10,12 +10,6 @@ Black brick -- marked true hero
 ![til](Screenshot_16.png)
 ![til](Screenshot_2.png)  
 
-
-TODO list:   
-Item panel           (Hero, item, cooldown)  
-Ability panel        (Hero, ability, cooldown, level(?), manacost(?))  
-Enemy No Buttons     (Check, if hero cant cast anything dangerous(?) because of cooldowns or no mana)  
-Enemy Ward Wasted    (Remember vec3 position when enemy wasted his ward, if enemy in your team sight. Put timer at this position)  
-Enemy Vision Radius  (Set particle circle at hero to see, how far he can see. Personal for every hero, no constant ranges)  
-AFK detector         (Will show, how long teammate dont move)  
-Minimap draw         (just like vec3 draw, but also on minimap)  
+im totaly tired off playing with brainless agressive assholes and really DO NOT WANT ANY TO DEVELOP ANYTHING TO DOTA 2. 
+This community is hopeless. Develop it for free i will not evermore. Also im f/////ng noname so nobody will donate me to stimulate get to work.
+So this garbage is DOTA's heritage from me. Die in hell, dota2 toxic community. Hope, we will never see again and i never get back to work with it. 
