@@ -5,31 +5,6 @@
 #include "../imgui/backends/imgui_impl_win32.h"
 
 
-typedef bool(__thiscall* VBE)(unsigned __int64*, DOTATeam_t);
-
-bool VisibleByEnemyOkToUse = false;
-bool VisibleByEnemyChecked = false;
-int  VisibleByEnemySlot = 0;
-bool VisibleByEnemy(VBE** ent, DOTATeam_t t)
-
-{
-	if (!VisibleByEnemyChecked)
-	{
-		if (CheckSigInVtable((unsigned __int64**)ent, 260, d::n::VBE, &VisibleByEnemySlot))
-		{
-			VisibleByEnemyOkToUse = true;
-#ifdef _DEBUG
-			printf("\nVBE func id == %d", VisibleByEnemySlot);
-#endif
-		}
-		VisibleByEnemyChecked = true;
-	}
-	if (!VisibleByEnemyOkToUse)
-		return 0;
-
-	return ((*ent)[VisibleByEnemySlot])((unsigned __int64*)ent, t);
-}
-
 
 void DrawFilledRect11(int x, int y, int w, int h, D3DCOLOR color, IDirect3DDevice9* dev)
 {
@@ -166,7 +141,7 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 		for (char i = 0; i < 5; i++)
 		{
 			if (heroes[i])
-				if (VisibleByEnemy((VBE**)heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT)))
+				if (IsVisibleByTeam(heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT)))
 					LocalPlayer = heroes[i];
 		}
 	}
@@ -190,12 +165,23 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				long long temp = fuckingMatrix + 0x288;
 				WorldToScreen(*(D3DVECTOR*)heroVec3, &screen, (float*)temp, view.Width, view.Height);
 
+				RECT rect;
+				rect.left = screen.x;
+				rect.top = screen.y;
+				rect.right = screen.x + 500;
+				rect.bottom = screen.y + 50;
 
+				
 				if (heroTeam != EnemyTeam)
 				{
-					heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
-					
-
+					heroes_isSeen[i] = IsVisibleByTeam(heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
+					/*auto var = heroes[i];
+					__asm {
+						mov rdi,500
+						mov rsi,var
+					}*/		
+					//DrawParticleOnEntity(heroes[i]->GetParticleMgr(), "particles/ui_mouseactions/range_display.vpcf", heroes[i], 500);//0, 1);
+					//FindOrCreateParticleOrSomething(CParticleSystemMgrPtr, heroes[i]->GetA40()->Get2C8(), "particles/ui_mouseactions/range_display.vpcf", 1);
 					int c = heroes[i]->GetModifiersCount();
 					auto ModPool = heroes[i]->GetModifiersPool();
 					for (int w = 0; w < c; w++)
@@ -211,6 +197,42 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				}
 				else //if heroTeam==EnemyTeam
 				{
+					if (enemyCD)
+					{
+						char CDString[100];
+						memset(CDString, 0, 100);
+						auto npcinf = heroes[i]->GetNpcInfo();
+						for (char i = 0; i < 16; i++)
+						{
+							auto ab = npcinf->GetAbility(i);
+							auto nm = ab->GetName();
+							//auto lv = ab->GetLevel();
+							auto cd = ab->GetLastCooldown();
+							auto max_cd = ab->GetMaxCooldown();
+							if (!nm)//|| !*nm
+								continue;
+							else
+							{
+								auto npm = npcinf->GetNpcName();
+								//auto npm_len = strlen(npm);
+								//nm += npm_len;
+								if (!memcmp(nm, npm, strlen(npm)))
+								{
+									rect.top += 15;
+									rect.bottom += 15;
+									memset(CDString, 0, 100);
+									sprintf(CDString, "%s [%0.f]",nm,cd, max_cd);
+									font->DrawTextA(0, CDString, 100, &rect, 0, D3DCOLOR_ARGB(255, 0, 255, 0));
+									
+								}
+							}
+							
+						}
+						//rect.top += 50;
+						//rect.bottom += 50;
+						//font->DrawTextA(0, CDString, strlen(CDString), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));
+						
+					}
 					if (DrawHealthPanel)
 					{
 						char HeroName[7];
@@ -243,6 +265,47 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 			ImGui::End();
 		
 	}
+#ifdef _DEBUG
+	for (int i = 0; i < xlam_slots; i++)
+	{
+		
+
+		if (!xlam[i])
+			continue;
+
+		auto xlamName = xlam[i]->Schema_DynamicBinding()->binaryName;
+		if (!xlamName)
+			continue;
+
+		auto Skeleton = xlam[i]->GetSleleton();
+		if (!Skeleton)
+			continue;
+
+		auto xlamVec3 = Skeleton->GetPos();
+
+		vec2 screen;
+		screen.x = 0;
+		screen.y = 0;
+
+		long long temp = fuckingMatrix + 0x288;
+		WorldToScreen(*(D3DVECTOR*)xlamVec3, &screen, (float*)temp, view.Width, view.Height);
+
+		RECT rect;
+		rect.left = screen.x;
+		rect.top = screen.y;
+		rect.right = screen.x + 500;
+		rect.bottom = screen.y + 50;
+
+		if (screen.x && screen.y)
+			if (IsVisibleByTeam(xlam[i], DOTATeam_t::DOTA_TEAM_RADIANT) && IsVisibleByTeam(xlam[i], DOTATeam_t::DOTA_TEAM_DIRE))
+			{
+				DrawFilledRect11(rect.left, rect.top, 5, 5, D3DCOLOR_ARGB(255, 255, 0, 0), pDevice);
+				
+				font->DrawTextA(0, xlamName, strlen(xlamName), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));//works fine
+			}
+	}
+#endif
+
 }
 
 #ifdef _DEBUG

@@ -182,6 +182,7 @@
     <ClInclude Include="Render.h" />
     <ClInclude Include="Schema.h" />
     <ClInclude Include="sig.h" />
+    <ClInclude Include="Sync.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="WndProc.h" />
   </ItemGroup>

@@ -36,6 +36,17 @@ enum r {
 	rdi
 };
 
+enum r2 {
+	r8 = 0,
+	r9,
+	r10,
+	r11,
+	r12,
+	r13,
+	r14,
+	r15
+};
+
 class connector {
 
 	bool	boolka;
@@ -206,6 +217,27 @@ class connector {
 		}
 	}
 
+	void SetStealerCode(char* address, int sz, char* container, r2 RegToSteal)
+	{
+		{
+			memset(cave + cave_actual_offset, 0x50, 1);
+			cave_actual_offset += 1;
+			memset(cave + cave_actual_offset, 0x48, 1);
+			cave_actual_offset += 1;
+			memset(cave + cave_actual_offset, 0xB8, 1);
+			cave_actual_offset += 1;
+			memcpy(cave + cave_actual_offset, (__int64*)&container, 8);
+			cave_actual_offset += 8;
+			memset(cave + cave_actual_offset, 0x4C, 1);
+			cave_actual_offset += 1;
+			memset(cave + cave_actual_offset, 0x89, 1);
+			cave_actual_offset += 1;
+			memset(cave + cave_actual_offset, !RegToSteal ? 0 :(RegToSteal * 8), 1);
+			cave_actual_offset += 1;
+			memset(cave + cave_actual_offset, 0x58, 1);
+			cave_actual_offset += 1;
+		}
+	}
 public:
 	connector()
 	{	
@@ -363,7 +395,7 @@ public:
 		return slot;
 	}
 
-
+	//your code->original_code
 	int set_reg_stealer(char* address, int sz, char* container, r RegToSteal)
 	{
 		setVP(address, sz);
@@ -393,7 +425,37 @@ public:
 		backVP(address, sz);
 		return slot;
 	}
+	int set_reg_stealer(char* address, int sz, char* container, r2 RegToSteal)
+	{
+		setVP(address, sz);
+		GetSlot();
+
+		if (!boolka)
+		{
+			log("\n!boolka");
+			return 0;
+		}
+		if (!saveOriginalCode(address, sz))
+		{
+			log("\n!saveOriginalCode()");
+			return 0;
+		}
+		original_code_address[slot] = address;
+		original_code_sz[slot] = sz;
+		memset(address, 0x90, sz);
+		makeJump(cave + cave_actual_offset, address);
+
+		SetStealerCode(address, sz, container, RegToSteal);
+
+		memcpy(cave + cave_actual_offset, original_code[slot], sz);
+		cave_actual_offset += sz;
+		makeJump(address + 14 + (sz - 14), cave + cave_actual_offset);
+		cave_actual_offset += 14;
+		backVP(address, sz);
+		return slot;
+	}
 	//some times all you need to do, it is execute original code before your asm injection
+	//original_code->your code
 	int set_reg_stealer_reverse(char* address, int sz, char* container, r RegToSteal)
 	{
 		setVP(address, sz);
@@ -424,6 +486,13 @@ public:
 		backVP(address, sz);
 	}
 #endif
+
+	void Unset_hook(int i) //memory leak. 
+	{
+		setVP(original_code_address[i], original_code_sz[i]);
+		memcpy(original_code_address[i], original_code[i], original_code_sz[i]);
+		backVP(original_code_address[i], original_code_sz[i]);
+	}
 
 	~connector()
 	{

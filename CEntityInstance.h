@@ -122,10 +122,148 @@ public:
 	}
 };
 
+class ParticleMgr
+{
+public:
+	__inline __int64* GetParticleHost() //CParticlesLibHost_Client
+	{
+		return (__int64*)((char*)this + 0x8);
+	}
+};
+
+//исследовать оффсел 0x498
+
+/*
+
+Address of signature = client.dll + 0x019C327E
+"\x89\x6F\x00\x44\x3B", "xx?xx"
+"89 6F ? 44 3B"
+
+rdi == CDOTA_Hud_AbilityPanel (hud with buttons and numbers)
+A lot of useful info
+
+*/
+
+class CBaseAblity
+{
+public:
+	/*__inline __int32 GetCastRange()
+	{
+		return CalculateCastRange((__int64*)this);
+	}*/
+	__inline char* GetName()
+	{
+		return *((char**)((char*)this + 0x18));
+		//*(float*)((char*)this + 0x5A8);
+	}
+	__inline char GetLevel()
+	{
+		return *((char*)this + 0x5A0);
+	}
+
+	__inline float GetMaxCooldown()
+	{
+		auto temp = *(char**)(this);
+		return *(float*)((char*)temp + 0x5AC);
+	}
+	__inline float GetLastCooldown()
+	{
+		auto temp = *(char**)(this);
+		return *(float*)((char*)temp + 0x5A8);
+	}
+
+	__inline float GetManacost()
+	{
+		return *(float*)((char*)this + 0x5B0);
+	}
+
+	__inline char GetCharges()
+	{
+		return *((char*)this + 0x5CC);
+	}
+
+	__inline float GetLastChargeCooldown()
+	{
+		return *(float*)((char*)this + 0x5D0);
+	}
+};
+
+class NPCInfo
+{
+public:
+	char* GetNpcName()
+	{
+		return *(char**)((char*)this + 0x18) +14;
+	}
+	CBaseAblity* GetAbility(int i)
+	{
+		i+=1;
+		return (CBaseAblity*)((char*)this + i* 0x78);
+	}
+	char GetAbilityCount()
+	{
+		char count = 0;
+		for (int i = 0; i < 16; i++)
+		{		
+			auto ab = this->GetAbility(i);
+			auto nm = ab->GetName();
+			
+			if (!nm)//|| !*nm
+				continue;
+			else
+			{
+				auto npm = this->GetNpcName();
+				//if (!memcmp(nm, npm, strlen(npm)))
+					count += 1;
+			}
+		}
+		return count;
+	}
+};
+
+class Nekto2C8
+{
+public:
+
+};
+
+class NektoA40
+{
+public:
+	__inline Nekto2C8 Get2C8()
+	{
+		return *(Nekto2C8*)((char*)this + 0x2C8);
+	}
+};
+
 class CBaseEntity
 {
 public:
     virtual CSchemaClassBinding* Schema_DynamicBinding(void);
+	__inline NPCInfo* GetNpcInfo()
+	{
+		return *(NPCInfo**)((char*)this + 0x10);
+	}
+	/*
+00007FF9EA17D61F 48 8B 85 E0 00 00 00 mov         rax,qword ptr [this]  
+00007FF9EA17D626 48 8B 40 10          mov         rax,qword ptr [rax+10h]  
+	}
+00007FF9EA17D62A 48 8D A5 C8 00 00 00 lea         rsp,[rbp+0C8h]  
+00007FF9EA17D631 5F                   pop         rdi  
+00007FF9EA17D632 5D                   pop         rbp  
+00007FF9EA17D633 C3                   ret  
+
+00007FF9EA17D61F 48 8B 85 E0 00 00 00 mov         rax,qword ptr [this]
+00007FF9EA17D626 48 83 C0 10          add         rax,10h
+	}
+00007FF9EA17D62A 48 8D A5 C8 00 00 00 lea         rsp,[rbp+0C8h]
+00007FF9EA17D631 5F                   pop         rdi
+00007FF9EA17D632 5D                   pop         rbp
+00007FF9EA17D633 C3                   ret
+	*/
+
+
+
 	__inline Skeleton* GetSleleton()
 	{
 		return (Skeleton*)*(__int64*)((char*)this + 0x310);
@@ -142,6 +280,14 @@ public:
 	{
 		return *((DOTATeam_t*)this + 0x3AF);
 	}
+	__inline ParticleMgr* GetParticleMgr()
+	{
+		return ((ParticleMgr*)((char*)this + 0x490));
+	}
+	__inline NektoA40* GetA40()
+	{
+		return ((NektoA40*)((char*)this + 0x490));
+	}
 	__inline char GetModifiersCount()
 	{
 		return *((char*)this + 0xE20);
@@ -150,6 +296,15 @@ public:
 	__inline ModifierPool* GetModifiersPool()
 	{
 		return (ModifierPool*)((char*)this + 0xE28);
+	}
+};
+
+
+class Hud {
+public:
+	float* GetLastPingCoord()
+	{
+		return (float*)((char*)this + 0x17C);
 	}
 };
 
@@ -184,35 +339,3 @@ __int64 __fastcall sub_7FF8F14AE730(__int64 a1, unsigned int a2, __int64 a3)
 client.dll+0x194FC57
 */
 
-class CBaseAblity
-{
-public:
-	/*__inline __int32 GetCastRange()
-	{
-		return CalculateCastRange((__int64*)this);
-	}*/
-	__inline char GetLevel()
-	{
-		return *((char*)this + 0x5A0);
-	}
-
-	__inline float GetLastCooldown()
-	{
-		return *(float*)((char*)this + 0x5A8);
-	}
-
-	__inline float GetManacost()
-	{
-		return *(float*)((char*)this + 0x5B0);
-	}
-
-	__inline char GetCharges()
-	{
-		return *((char*)this + 0x5CC);
-	}
-
-	__inline float GetLastChargeCooldown()
-	{
-		return *(float*)((char*)this + 0x5D0);
-	}
-};

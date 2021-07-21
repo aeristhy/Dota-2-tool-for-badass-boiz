@@ -25,6 +25,8 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 	_pDevice = pDevice;
 	if (!RenderInitiated)
 	{
+		if (D3DXCreateFontA(pDevice, 15, 11, FW_NORMAL, 1, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Consolas", &font) == S_OK)
+			printf("\nfont created");
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -49,7 +51,12 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 	DrawFilledRect11(0, 100, 50, 20, 0x0000FF00, pDevice); green
 	DrawFilledRect11(0, 150, 50, 20, 0x000000FF, pDevice); blue
 	*/
-
+	//RECT rect;
+	//rect.left	= 0;
+	//rect.top	= 0;
+	//rect.right	= 100;
+	//rect.bottom = 100;
+	//font->DrawTextA(0, "xuinya", -1, &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));//works fine
 
 	if (fuckingMatrix == fuckingMatrixLastValue)
 		fuckingMatrixChanged = false;
@@ -75,6 +82,57 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 	if (fuckingMatrix && fuckingMatrixValid)
 		esp(pDevice);
 
+	/*
+	
+	Address of signature = client.dll + 0x00D6A133
+"\xF3\x41\x00\x00\x00\x00\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x41\x00\x00\x00\x00\x00\x00\x00\xF3\x41\x00\x00\x00\x00\x00\x00\x00\xFF\x90", "xx???????xx???xx???????xx???????xx"
+"F3 41 ? ? ? ? ? ? ? F3 0F ? ? ? F3 41 ? ? ? ? ? ? ? F3 41 ? ? ? ? ? ? ? FF 90"
+В плавающих сохраняются координаты партикла-пинга
+В r13 хранится указатель на худ (?), но это двухбайтоывй регистр и имеющийся стилер владеет лишь однобайтовыми. 
+TODO:
+1) Разделить тип стила на один и два байта, т.к. разный размер и все дела
+2) Апгрейднуть стилер до возможности красть x64
+3) Добавить комментарии с описанием, каков миниимальный объём памяти для стилера в байтах
+4) Добавить возможность красть содержимое нескольких регистров за одну инъекцию,чтобы не плодить лишние джампы
+
+Внизу код, который заменит инструкции нопами. Перед этим надо скопировать значение r13, дабы записать координаты партикла
+Иначе, после ноппинга, стилер перекинет нопы на новую страницу, и в этом не будет никакого смысла. Хотя игра и не вылетит. 
+Это жест оптимизации, Снеж, тут не нужно искать ошибки. Всё ок. 
+Крадём r13, переключаем флаг, ноппим, по повторному переключению удаляем нопы и нулим то, где хранится украденное значение r13 
+	*/
+	if (NoPings)
+	{
+		if (!IsHookSet)
+		{
+			VirtualProtect(PingCoordinateWriter, 32, PAGE_EXECUTE_READWRITE, &trashbox);
+			memcpy(PingCoordinatorOriginalCode, PingCoordinateWriter, 32);
+			memset(PingCoordinateWriter, 0x90, 9);
+			auto temp = (char*)PingCoordinateWriter + 14;
+			memset(temp, 0x90, 18);
+			HookID = hk.set_reg_stealer((char*)PingCoordinateWriter, 14, (char*)&HudPtrStolen, r2::r13);
+			memcpy(PingCoordinatorHooked, PingCoordinateWriter, 32);
+			IsHookSet = 1;
+		}
+		if (HudPtrStolen && !siet)
+		{
+			memcpy(PingCoordinateWriter, PingCoordinatorOriginalCode, 32);
+			memset(PingCoordinateWriter, 0x90, 9);
+			auto temp = (char*)PingCoordinateWriter + 14;
+			memset(temp, 0x90, 18);
+			HudPtrStolen->GetLastPingCoord()[0] = -20000.0; //kick annoying ping's ass out of map
+			siet = 1;
+		}
+		if (!siet)
+			memcpy(PingCoordinateWriter, PingCoordinatorHooked, 32);
+	}
+	
+	if (!NoPings && IsHookSet)
+	{
+		HudPtrStolen = 0;
+		siet = 0;
+		memcpy(PingCoordinateWriter, PingCoordinatorOriginalCode, 32);
+	}
+
 #ifdef _DEBUG
 	ImGui::Begin("Lick the dick :p");                      
 	{
@@ -90,12 +148,19 @@ HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 	ImGui::End();
 #endif
 	ImGui::Begin("##Placeholer");
-	ImGui::Text("Health panel");
+	ImGui::Text("HP Panel");
 	ImGui::SameLine();
 	ImGui::Checkbox("##Heath_Panel_checkbox", &DrawHealthPanel);
-	ImGui::Text("True hero");
+	ImGui::Text("Truehero");
 	ImGui::SameLine();
 	ImGui::Checkbox("##True_hero_checkbox", &TrueHero);
+	/*ImGui::Text("No Pings");
+	ImGui::SameLine();
+	ImGui::Checkbox("(not full disabled yet)", &NoPings);*/
+	ImGui::Text("Spell CD");
+	ImGui::SameLine();
+	ImGui::Checkbox("##", &enemyCD);
+
 	ImGui::End();
 
 
