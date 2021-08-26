@@ -1,7 +1,6 @@
 #pragma once
 //#include "Include/d3d9.h"
 #include "GlobalVars.h"
-#include "sig.h"
 //#include "Eject.h"
 
 #include "ESP.h"
@@ -100,6 +99,7 @@ TODO:
 Это жест оптимизации, Снеж, тут не нужно искать ошибки. Всё ок. 
 Крадём r13, переключаем флаг, ноппим, по повторному переключению удаляем нопы и нулим то, где хранится украденное значение r13 
 	*/
+#ifdef _DEBUG
 	if (NoPings)
 	{
 		if (!IsHookSet)
@@ -109,7 +109,7 @@ TODO:
 			memset(PingCoordinateWriter, 0x90, 9);
 			auto temp = (char*)PingCoordinateWriter + 14;
 			memset(temp, 0x90, 18);
-			HookID = hk.set_reg_stealer((char*)PingCoordinateWriter, 14, (char*)&HudPtrStolen, r2::r13);
+			hk.set_reg_stealer((char*)PingCoordinateWriter, 14, (char*)&HudPtrStolen, r2::r13);
 			memcpy(PingCoordinatorHooked, PingCoordinateWriter, 32);
 			IsHookSet = 1;
 		}
@@ -132,35 +132,48 @@ TODO:
 		siet = 0;
 		memcpy(PingCoordinateWriter, PingCoordinatorOriginalCode, 32);
 	}
+#endif
 
 #ifdef _DEBUG
+
+	if (DrawModifiersPanel)
+	{
+		ImGui::Begin("Modifiers panel");
+		OutputModifiers();
+		ImGui::End();
+	}
+#endif
+
 	ImGui::Begin("Lick the dick :p");                      
 	{
-
+#ifdef _DEBUG
 		if (ImGui::Button("unload"))
 		{
 			FreeConsole();
 			hk.BreakTrampoline(TrampoToBreak);
 			CreateThread(0, 0, (LPTHREAD_START_ROUTINE)&cutout, 0, 0, 0);
 		}
+#endif
 		debugWindow();
 	}
-	ImGui::End();
-#endif
-	ImGui::Begin("##Placeholer");
+
 	ImGui::Text("HP Panel");
 	ImGui::SameLine();
 	ImGui::Checkbox("##Heath_Panel_checkbox", &DrawHealthPanel);
-	ImGui::Text("Truehero");
+	ImGui::Text("Truehero");	
 	ImGui::SameLine();
 	ImGui::Checkbox("##True_hero_checkbox", &TrueHero);
+#ifdef _DEBUG
+	ImGui::Text("Modifiers panel");
+	ImGui::SameLine();
+	ImGui::Checkbox("##xui",&DrawModifiersPanel);
 	/*ImGui::Text("No Pings");
 	ImGui::SameLine();
-	ImGui::Checkbox("(not full disabled yet)", &NoPings);*/
+	ImGui::Checkbox("(not full disabled yet)", &NoPings);
 	ImGui::Text("Spell CD");
 	ImGui::SameLine();
-	ImGui::Checkbox("##", &enemyCD);
-
+	ImGui::Checkbox("##", &enemyCD);*/
+#endif
 	ImGui::End();
 
 

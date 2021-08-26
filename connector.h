@@ -141,8 +141,8 @@ class connector {
 #elif  __its64
 
 		
-		*from		= 0xFF;
-		*(from + 1)	= 0x25;
+		*from		= (char)0xFF;
+		*(from + 1)	= (char)0x25;
 		*(from + 2) = 0;
 		*(from + 3) = 0;
 		*(from + 4) = 0;

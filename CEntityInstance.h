@@ -2,7 +2,6 @@
 #include "vector.h"
 #include "Schema.h"
 #include "Color.h"
-#include "GlobalVars.h"
 
 struct SchemaClassBinding {
 	SchemaClassBinding* parent; // I THINK
@@ -94,10 +93,21 @@ class Modifier {
 public:
 	__inline char* Name()
 	{
-		__int64* qq = (__int64*)((*(__int64*)this) + 0x10);
+		__int64* qq = (__int64*)(((char*)this) + 0x10);
 		char* str = *(char**)qq;
 		return str;
 	}
+	__inline DOTATeam_t GetTeamOwner()
+	{
+		return *(DOTATeam_t*)(((char*)this) + 0x80);
+	}
+#ifdef _DEBUG
+	__inline DOTATeam_t SetTeamOwner(DOTATeam_t val)
+	{
+		*(DOTATeam_t*)(((char*)this) + 0x80) = val;
+	}
+#endif
+
 };
 
 class ModifierPool {
@@ -105,7 +115,7 @@ public:
 	__inline Modifier* GetModifier(int index)
 	{
 		__int64 qq = (__int64)((*(__int64*)this) + index*8);
-		return (Modifier*)qq;
+		return *(Modifier**)qq;
 	}
 	Modifier* operator[](int value)
 	{
@@ -153,7 +163,8 @@ public:
 	}*/
 	__inline char* GetName()
 	{
-		return *((char**)((char*)this + 0x18));
+		auto temp = *(char**)((char*)this + 0x10);
+		return *((char**)((char*)temp + 0x18));
 		//*(float*)((char*)this + 0x5A8);
 	}
 	__inline char GetLevel()
@@ -163,13 +174,11 @@ public:
 
 	__inline float GetMaxCooldown()
 	{
-		auto temp = *(char**)(this);
-		return *(float*)((char*)temp + 0x5AC);
+		return *(float*)((char*)this + 0x5AC);
 	}
 	__inline float GetLastCooldown()
 	{
-		auto temp = *(char**)(this);
-		return *(float*)((char*)temp + 0x5A8);
+		return *(float*)((char*)this + 0x5A8);
 	}
 
 	__inline float GetManacost()
@@ -198,7 +207,7 @@ public:
 	CBaseAblity* GetAbility(int i)
 	{
 		i+=1;
-		return (CBaseAblity*)((char*)this + i* 0x78);
+		return *(CBaseAblity**)((char*)this + i* 0x78);
 	}
 	char GetAbilityCount()
 	{
@@ -288,14 +297,22 @@ public:
 	{
 		return ((NektoA40*)((char*)this + 0x490));
 	}
+	/*__inline bool IsLocalPlayer()
+	{
+		if (!*(__int32*)((char*)this + 0x0b48))
+			return 0;
+		return 1;
+	}*/
 	__inline char GetModifiersCount()
 	{
-		return *((char*)this + 0xE20);
+		return *((char*)this + 0xE28);
+		//Calve moved it 0xE20->0xE28 in summer 2021 (july) 
 	}
 
 	__inline ModifierPool* GetModifiersPool()
 	{
-		return (ModifierPool*)((char*)this + 0xE28);
+		return (ModifierPool*)((char*)this + 0xE30);
+		//Calve moved it 0xE28->0xE30 in summer 2021 (july) 
 	}
 };
 

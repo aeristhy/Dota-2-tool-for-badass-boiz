@@ -14,6 +14,10 @@
 #include "PatternFinder.h"
 #pragma warning(disable : 4996)
 
+
+#include <iostream>
+#include <fstream>
+
 void SetRenderingEnabled(void*, bool);
 
 void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
@@ -69,7 +73,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
             && !strstr(typeName, "C_DOTAWearableItem") && !strstr(typeName, "C_DOTASceneEntity") && !strstr(typeName, "CInfoTarget")
             && !strstr(typeName, "C_DOTA_Roshan") && !strstr(typeName, "CInfoWorldLayer") && !strstr(typeName, "C_DynamicProp")
             && !strstr(typeName, "C_TriggerBuoyancy") && !strstr(typeName, "C_DOTA_NeutralSpawner")
-            && !strstr(typeName, "CDOTA_Item_Ward_Dispenser")
+            && !strstr(typeName, "CDOTA_Item_Ward_Dispenser") && !strstr(typeName, "CAdditionalWearable")
 
 
             )//0x00007ffbaf91a7b0 "C_DOTA_PortraitBaseModel"
@@ -104,6 +108,10 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
             if (heroes[meow] == ptr)
             {
                 heroes[meow] = 0;
+#ifdef _DEBUG
+                for (char i = 0; i < Modifiers_Cap; i++)
+                    Modifiers[meow][i] = 0;
+#endif
                 break;
             }
         }
@@ -138,6 +146,12 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
     if (IsNoHeroes)
     {
         LocalPlayer = 0;
+        LocalPlayerID = 0;
+//#ifdef _DEBUG
+//        for (char i = 0; i < heroes_slots; i++)
+//            for (char q = 0; q < Modifiers_Cap; q++)
+//                Modifiers[i][q] = 0;
+//#endif
     }
     return OnRemoveEntityRet(ecx, ptr, index);
 }
@@ -253,9 +267,9 @@ rdi == radius
 
     hk.set_hook((char*)OnAddEntityFunc, 16, (char*)OnAddEntity, (char**)&OnAddEntityRet);
     hk.set_hook((char*)OnRemoveEntityFunc, 16, (char*)OnRemoveEntity, (char**)&OnRemoveEntityRet);
-    hk.set_reg_stealer((char*)InBattleCameraFunc, 11, (char*)&StolenVar, r::rcx);
+    //hk.set_reg_stealer((char*)InBattleCameraFunc, 11, (char*)&StolenVar, r::rcx);
     hk.set_reg_stealer_reverse((char*)WTGViewMatrix, 16, (char*)&fuckingMatrix, r::rax);
-    hk.set_reg_stealer((char*)WTGCParticleSystemMgr, 17, (char*)&CParticleSystemMgrPtr, r::rcx);
+    //hk.set_reg_stealer((char*)WTGCParticleSystemMgr, 17, (char*)&CParticleSystemMgrPtr, r::rcx);
     TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
 
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);

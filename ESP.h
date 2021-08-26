@@ -84,79 +84,38 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 {
 	D3DVIEWPORT9 view;
 	pDevice->GetViewport(&view);
-	//if (!IsLocalPlayerFound) //only works with real players. Bots and disconnected players counts as local player. (siet)
-	//{
-	//	bool hasBothTeam = 0;
-	//	bool hasDire = 0;
-	//	bool hasRadiant = 0;
-	//	for (char i = 0; i < heroes_slots; i++)
-	//	{
-	//		if (!heroes[i])
-	//			continue;
-	//		auto heroTeam = heroes[i]->GetTeam();
-	//		heroes_isSeen[i] = VisibleByEnemy((VBE**)heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
-	//		if (heroes_isSeen[i])
-	//		{
-	//			if (!hasDire && heroTeam == DOTATeam_t::DOTA_TEAM_DIRE)
-	//				hasDire = 1;
-	//			if (!hasRadiant && heroTeam == DOTATeam_t::DOTA_TEAM_RADIANT)
-	//				hasRadiant = 1;
-	//			if (hasRadiant && hasDire)
-	//			{
-	//				hasBothTeam = 1;
-	//				break;
-	//			}
-	//		}
-	//	}
-	//	if (hasBothTeam)
-	//	{
-	//		
-	//		for (char i = 0; i < heroes_slots; i++)
-	//		{
-	//			if (!heroes[i])
-	//				continue;
-	//			bool AloneInTeam = 1;
-	//			auto heroTeam = heroes[i]->GetTeam();
-	//			for (char q = 0; q < heroes_slots; q++)
-	//			{
-	//				if (!heroes[q])
-	//					continue;
-	//				if (q != i && heroTeam == heroes[q]->GetTeam())
-	//					AloneInTeam = 0;
-	//			}
-	//			if (AloneInTeam)
-	//			{
-	//				IsLocalPlayerFound = 1;
-	//				LocalPlayer = heroes[i];
-	//			}
-	//		}
-	//		
-	//	}
-	//}
-	//else
 	
-	//ужасное шаманство, проведя которое, придумал вариант проще и лучше. Урф.
 	if (!LocalPlayer)
 	{
 		for (char i = 0; i < 5; i++)
 		{
 			if (heroes[i])
 				if (IsVisibleByTeam(heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT)))
+				//if(heroes[i]->IsLocalPlayer())
+				{
 					LocalPlayer = heroes[i];
+					LocalPlayerID = i;
+					localPlayerTeam = LocalPlayer->GetTeam();
+					EnemyTeam = localPlayerTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT;
+					break;
+				}
+
 		}
 	}
 	else
 	{
 		if (DrawHealthPanel)
 			ImGui::Begin("HealthPanel");
-		auto localPlayerTeam = LocalPlayer->GetTeam();
-		auto EnemyTeam = localPlayerTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT;
+
+		
 		for (char i = 0; i < heroes_slots; i++)
 			if (heroes[i])
 			{	
-				auto heroName = heroes[i]->Schema_DynamicBinding()->binaryName + 17;
-				auto heroTeam = heroes[i]->GetTeam();
-				auto heroVec3 = heroes[i]->GetSleleton()->GetPos();
+				auto hero	  = heroes[i];
+				auto heroName = hero->Schema_DynamicBinding()->binaryName + 17;
+				auto heroTeam = hero->GetTeam();
+				auto heroVec3 = hero->GetSleleton()->GetPos();
+				auto heroIsVisible = IsVisibleByTeam(hero, (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
 
 				vec2 screen;
 				screen.x = 0;
@@ -174,56 +133,65 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				
 				if (heroTeam != EnemyTeam)
 				{
-					heroes_isSeen[i] = IsVisibleByTeam(heroes[i], (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
-					/*auto var = heroes[i];
-					__asm {
-						mov rdi,500
-						mov rsi,var
-					}*/		
-					//DrawParticleOnEntity(heroes[i]->GetParticleMgr(), "particles/ui_mouseactions/range_display.vpcf", heroes[i], 500);//0, 1);
-					//FindOrCreateParticleOrSomething(CParticleSystemMgrPtr, heroes[i]->GetA40()->Get2C8(), "particles/ui_mouseactions/range_display.vpcf", 1);
-					int c = heroes[i]->GetModifiersCount();
-					auto ModPool = heroes[i]->GetModifiersPool();
+					//DrawParticleOnEntity(hero->GetParticleMgr(), "particles/ui_mouseactions/range_display.vpcf", hero, 500);//0, 1);
+					//FindOrCreateParticleOrSomething(CParticleSystemMgrPtr, hero->GetA40()->Get2C8(), "particles/ui_mouseactions/range_display.vpcf", 1);
+					int c = hero->GetModifiersCount();
+					auto ModPool = hero->GetModifiersPool();
+#ifdef _DEBUG
+					LastModifiersCount[i][0] = c;
+#endif
 					for (int w = 0; w < c; w++)
 					{
-						if (!memcmp(ModPool->GetModifier(w)->Name(), "modifier_truesight", 18))
+#ifdef _DEBUG
+						Modifiers[i][w] = 0;
+#endif
+						auto Mod = ModPool->GetModifier(w);
+						if (!Mod)
+							continue;
+#ifdef _DEBUG
+						Modifiers[i][w] = Mod;
+#endif
+						if (!memcmp(Mod->Name(), "modifier_truesight", 18))
 						{
 							DrawFilledRect11(screen.x, screen.y, 50, 50, quad_color, pDevice);
 						}
 					}
 
-					if (heroes_isSeen[i])
+					if (heroIsVisible)
 						DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
 				}
 				else //if heroTeam==EnemyTeam
 				{
+#ifdef _DEBUG
 					if (enemyCD)
 					{
 						char CDString[100];
-						memset(CDString, 0, 100);
-						auto npcinf = heroes[i]->GetNpcInfo();
+						auto npcinf = hero->GetNpcInfo();
 						for (char i = 0; i < 16; i++)
 						{
 							auto ab = npcinf->GetAbility(i);
-							auto nm = ab->GetName();
-							//auto lv = ab->GetLevel();
-							auto cd = ab->GetLastCooldown();
-							auto max_cd = ab->GetMaxCooldown();
-							if (!nm)//|| !*nm
-								continue;
-							else
+							if (ab)
 							{
-								auto npm = npcinf->GetNpcName();
-								//auto npm_len = strlen(npm);
-								//nm += npm_len;
-								if (!memcmp(nm, npm, strlen(npm)))
+								auto nm = ab->GetName();
+								//auto lv = ab->GetLevel();
+								auto cd = ab->GetLastCooldown();
+								auto max_cd = ab->GetMaxCooldown();
+								if (!nm)//|| !*nm
+									continue;
+								else
 								{
-									rect.top += 15;
-									rect.bottom += 15;
-									memset(CDString, 0, 100);
-									sprintf(CDString, "%s [%0.f]",nm,cd, max_cd);
-									font->DrawTextA(0, CDString, 100, &rect, 0, D3DCOLOR_ARGB(255, 0, 255, 0));
-									
+									auto npm = npcinf->GetNpcName();
+									//auto npm_len = strlen(npm);
+									//nm += npm_len;
+									if (!memcmp(nm, npm, strlen(npm)))
+									{
+										rect.top += 15;
+										rect.bottom += 15;
+										memset(CDString, 0, 100);
+										sprintf(CDString, "%s [%0.f]", nm, cd, max_cd);
+										font->DrawTextA(0, CDString, 100, &rect, 0, D3DCOLOR_ARGB(255, 0, 255, 0));
+
+									}
 								}
 							}
 							
@@ -233,17 +201,18 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 						//font->DrawTextA(0, CDString, strlen(CDString), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));
 						
 					}
+#endif
 					if (DrawHealthPanel)
 					{
 						char HeroName[7];
 						memcpy(HeroName, heroName, 6);
 						HeroName[6] = 0;
-						auto currentHealth = heroes[i]->GetCurrentHealth();
+						auto currentHealth = hero->GetCurrentHealth();
 						ImVec4 color;
-						color.x = 1.0;
-						color.w = 0.2;
-						color.y = 0.2;
-						color.z = 0.2;
+						color.x = (float)1.0;
+						color.w = (float)0.2;
+						color.y = (float)0.2;
+						color.z = (float)0.2;
 						if (currentHealth >= 1000)
 						{
 							color.y = 0.0;
@@ -255,7 +224,7 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 							color.y = 1.0;
 							color.z = 0.0;
 						}
-						ImGui::TextColored(color,"%s\t%d/%d", HeroName, currentHealth, heroes[i]->GetMaxHealth());
+						ImGui::TextColored(color,"%s\t%d/%d", HeroName, currentHealth, hero->GetMaxHealth());
 					}
 					if (TrueHero)
 						DrawFilledRect11(screen.x, screen.y-10, 50, 10, 0xFF000000, pDevice);
@@ -272,7 +241,9 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 
 		if (!xlam[i])
 			continue;
-
+		auto xx = xlam[i]->GetTeam();
+		if (xx != DOTA_TEAM_DIRE && xx != DOTA_TEAM_RADIANT)
+			continue;
 		auto xlamName = xlam[i]->Schema_DynamicBinding()->binaryName;
 		if (!xlamName)
 			continue;
@@ -307,16 +278,36 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 #endif
 
 }
-
 #ifdef _DEBUG
+void OutputModifiers()
+{
+	ImGui::Text("placeholder");
+	for (char i = 0; i < LastModifiersCount[LocalPlayerID][0]; i++)
+	{
+		auto Mod = Modifiers[LocalPlayerID][i];
+		if (Mod)
+		{
+			auto ModName = Mod->Name();
+			char buff[256];
+			memset(buff, 0, 256);
+			memcpy(buff, ModName, strlen(ModName));
+			ImGui::Text("[%d]%s", Mod->GetTeamOwner(), buff);
+		}
+	}
+}
+#endif
+
+
 void debugWindow()
 {
+#ifdef _DEBUG
 	for (char i = 0; i < heroes_slots; i++)
 		if (heroes[i])
 		{
 			auto heroName = heroes[i]->Schema_DynamicBinding()->binaryName + 17;
 			auto heroTeam = heroes[i]->GetTeam();
-			ImGui::Text("[%d]%s\t%s\t%llx", heroTeam, heroName, heroes_isSeen[i] ? "seen" : "0", (__int64*)heroes[i]);
+
+			ImGui::Text("[%d]%s %llx", heroTeam, heroName, (__int64*)heroes[i]);
 		}
-}
 #endif
+}
