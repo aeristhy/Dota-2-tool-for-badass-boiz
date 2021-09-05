@@ -188,7 +188,7 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 										rect.top += 15;
 										rect.bottom += 15;
 										memset(CDString, 0, 100);
-										sprintf(CDString, "%s [%0.f]", nm, cd, max_cd);
+										sprintf(CDString, "%s [%0.f] %0.f", nm, cd, max_cd);
 										font->DrawTextA(0, CDString, 100, &rect, 0, D3DCOLOR_ARGB(255, 0, 255, 0));
 
 									}

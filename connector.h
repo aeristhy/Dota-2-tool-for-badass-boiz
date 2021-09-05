@@ -484,6 +484,7 @@ public:
 		makeJump(address + 14 + (sz - 14), cave + cave_actual_offset);
 		cave_actual_offset += 14;
 		backVP(address, sz);
+		return slot;
 	}
 #endif
 

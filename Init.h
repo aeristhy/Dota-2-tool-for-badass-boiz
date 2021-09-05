@@ -197,11 +197,20 @@ rdi == radius
     auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
     auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
     auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll", "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
+    IsVisibleByTeam = (t4)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
+#ifdef _DEBUG
     CalculateCastRange          = (t3)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
-    IsVisibleByTeam             = (t4)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
     DrawParticleOnEntity        = (t5)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
     FindOrCreateParticleOrSomething = (t6)PatternFinder::PatternScan((char*)"particles.dll", "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
-    PingCoordinateWriter  = (__int64*)PatternFinder::PatternScan((char*)"client.dll", "F3 41 ? ? ? ? ? ? ? F3 0F ? ? ? F3 41 ? ? ? ? ? ? ? F3 41 ? ? ? ? ? ? ? FF 90");
+    PingCoordinateWriter  = (__int64*)PatternFinder::PatternScan((char*)"client.dll", "F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
+    auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll", "0F B6 ?? 4C 8B ?? 44 8B");
+#endif
+    /*
+    * particle name cutter
+    Address of signature = particles.dll + 0x0026E250
+"\x0F\xB6\x00\x4C\x8B\x00\x44\x8B", "xx?xx?xx"
+"0F B6 ? 4C 8B ? 44 8B"
+    */
     /*
     
     Address of signature = particles.dll + 0x00038FD0
@@ -221,6 +230,7 @@ rdi == radius
 
     
     //i dont even remember what the //// is CalculateCastRange.....................
+#pragma warning(disable : 4477) //to prevent flood in IDE output
 #ifdef _DEBUG
     if (InBattleCameraFunc == nullptr)///////////////////////
         printf("\nERROR: InBattleCameraFunc sig not found");
@@ -262,6 +272,10 @@ rdi == radius
         printf("\nERROR: FindOrCreateParticleOrSomething sig not found");
     else
         printf("\nPingCoordinateWriter: \t%llx", PingCoordinateWriter);
+    if (ParticleNameCutter == nullptr)///////////////////////
+        printf("\nERROR: ParticleNameCutter sig not found");
+    else
+        printf("\nParticleNameCutter: \t%llx", ParticleNameCutter);
 #endif
     
 

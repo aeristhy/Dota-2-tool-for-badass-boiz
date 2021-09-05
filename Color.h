@@ -1,5 +1,5 @@
 #pragma once
-
+#pragma warning(disable : 4244) //to prevent flood in IDE output
 
 // I dont remember where this color struct comes from but conflicts with the classic 4 unsigned bytes color that Source engine likes to use
 struct Color2
