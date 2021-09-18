@@ -295,7 +295,7 @@ public:
 	}
 	__inline NektoA40* GetA40()
 	{
-		return ((NektoA40*)((char*)this + 0x490));
+		return ((NektoA40*)((char*)this + 0xA40));
 	}
 	/*__inline bool IsLocalPlayer()
 	{
@@ -305,14 +305,16 @@ public:
 	}*/
 	__inline char GetModifiersCount()
 	{
-		return *((char*)this + 0xE28);
+		return *((char*)this + 0xE40);
 		//Calve moved it 0xE20->0xE28 in summer 2021 (july) 
+		//Calve moved it 0xE28->0xE40 in autumn 2021 (september)
 	}
 
 	__inline ModifierPool* GetModifiersPool()
 	{
-		return (ModifierPool*)((char*)this + 0xE30);
-		//Calve moved it 0xE28->0xE30 in summer 2021 (july) 
+		return (ModifierPool*)((char*)this + 0xE48);
+		//Calve moved it 0xE28->0xE30 in summer 2021 (july)
+		//Calve moved it 0xE30->0xE48 in autumn 2021 (september) //compendium update?
 	}
 };
 

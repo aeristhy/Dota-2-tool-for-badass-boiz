@@ -82,7 +82,7 @@ engine2.dll+2ED691 - C3                    - ret
 
 void esp(LPDIRECT3DDEVICE9 pDevice)
 {
-	D3DVIEWPORT9 view;
+	
 	pDevice->GetViewport(&view);
 	
 	if (!LocalPlayer)
@@ -137,20 +137,14 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 					//FindOrCreateParticleOrSomething(CParticleSystemMgrPtr, hero->GetA40()->Get2C8(), "particles/ui_mouseactions/range_display.vpcf", 1);
 					int c = hero->GetModifiersCount();
 					auto ModPool = hero->GetModifiersPool();
-#ifdef _DEBUG
 					LastModifiersCount[i][0] = c;
-#endif
 					for (int w = 0; w < c; w++)
 					{
-#ifdef _DEBUG
 						Modifiers[i][w] = 0;
-#endif
 						auto Mod = ModPool->GetModifier(w);
 						if (!Mod)
 							continue;
-#ifdef _DEBUG
 						Modifiers[i][w] = Mod;
-#endif
 						if (!memcmp(Mod->Name(), "modifier_truesight", 18))
 						{
 							DrawFilledRect11(screen.x, screen.y, 50, 50, quad_color, pDevice);
@@ -158,7 +152,11 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 					}
 
 					if (heroIsVisible)
+					{
 						DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
+						float hmhmhm = 0.0;
+						//DrawParticleOnEntity(hero->GetParticleMgr(), "particles/ui_mouseactions/range_display.vpcf", 1, 0, 0, &hmhmhm, 0);
+					}
 				}
 				else //if heroTeam==EnemyTeam
 				{
@@ -272,20 +270,19 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 			{
 				DrawFilledRect11(rect.left, rect.top, 5, 5, D3DCOLOR_ARGB(255, 255, 0, 0), pDevice);
 				
-				font->DrawTextA(0, xlamName, strlen(xlamName), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));//works fine
+				font->DrawTextA(0, xlamName, (INT)strlen(xlamName), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));//works fine
 			}
 	}
 #endif
 
 }
-#ifdef _DEBUG
+
 void OutputModifiers()
 {
-	ImGui::Text("placeholder");
 	for (char i = 0; i < LastModifiersCount[LocalPlayerID][0]; i++)
 	{
 		auto Mod = Modifiers[LocalPlayerID][i];
-		if (Mod)
+		if (Mod && Mod->GetTeamOwner() != localPlayerTeam)
 		{
 			auto ModName = Mod->Name();
 			char buff[256];
@@ -295,6 +292,22 @@ void OutputModifiers()
 		}
 	}
 }
+
+#ifdef _DEBUG
+
+
+void DrawQuad3D(float* q, LPDIRECT3DDEVICE9 pDevice)
+{
+	vec2 screen;
+	screen.x = 0;
+	screen.y = 0;
+
+	long long temp = fuckingMatrix + 0x288;
+	WorldToScreen(*(D3DVECTOR*)q, &screen, (float*)temp, view.Width, view.Height);
+	DrawFilledRect11(screen.x, screen.y, 5, 5, D3DCOLOR_ARGB(255, 0xAA, 0xAA, 0xEE), pDevice);
+
+}
+
 #endif
 
 

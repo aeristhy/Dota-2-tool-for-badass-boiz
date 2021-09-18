@@ -1,4 +1,5 @@
 #pragma once
+#include <d3d9helper.h>
 //#include "Include/d3d9.h"
 #include "GlobalVars.h"
 //#include "Eject.h"
@@ -6,9 +7,18 @@
 #include "ESP.h"
 #include <bitset>
 
+
 connector hk;
 ImVec4 clear_color;
-LPDIRECT3DDEVICE9 _pDevice;
+
+struct CUSTOMVERTEX
+{
+	FLOAT x, y, z;      // The untransformed, 3D position for the vertex
+	DWORD color;        // The vertex color
+};
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_DIFFUSE)
+LPDIRECT3DVERTEXBUFFER9 g_pVB = NULL; // Buffer to hold vertices
+
 #ifdef _DEBUG
 void cutout()
 {
@@ -21,7 +31,7 @@ void cutout()
 
 HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 pDevice)
 {
-	_pDevice = pDevice;
+	pDevice_ = pDevice;
 	if (!RenderInitiated)
 	{
 		if (D3DXCreateFontA(pDevice, 15, 11, FW_NORMAL, 1, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Consolas", &font) == S_OK)
@@ -134,7 +144,7 @@ TODO:
 	}
 #endif
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 
 	if (DrawModifiersPanel)
 	{
@@ -142,7 +152,7 @@ TODO:
 		OutputModifiers();
 		ImGui::End();
 	}
-#endif
+//#endif
 
 	ImGui::Begin("Lick the dick :p");                      
 	{
@@ -163,10 +173,103 @@ TODO:
 	ImGui::Text("Truehero");	
 	ImGui::SameLine();
 	ImGui::Checkbox("##True_hero_checkbox", &TrueHero);
-#ifdef _DEBUG
 	ImGui::Text("Modifiers panel");
 	ImGui::SameLine();
-	ImGui::Checkbox("##xui",&DrawModifiersPanel);
+	ImGui::Checkbox("##xui", &DrawModifiersPanel);
+#ifdef _DEBUG
+	ImGui::Text("Draw 3D box");
+	ImGui::SameLine();
+	ImGui::Checkbox("##d3dbox",&draw3dbox);
+	ImGui::Text("Disable input");
+	ImGui::SameLine();
+
+	if (draw3dbox)
+	{
+		
+
+		CUSTOMVERTEX g_Vertices[] =
+		{
+			{ -10.0f,-10.0f, 200.0f,      0x00ff0000, },
+			{ -10.0f,-10.0f, 510.0f,      0x0000ff00, },
+			{  10.0f,-10.0f, 510.0f,      0x000000ff, },
+			{  10.0f,-10.0f, 200.0f,      0x00ff0000, },
+			{ -10.0f,-10.0f, 200.0f,      0x0000ff00, },
+			{ -10.0f, 10.0f, 200.0f,      0x000000ff, },
+			{ -10.0f, 10.0f, 510.0f,      0x00ff0000, },
+			{ -10.0f, -10.0f, 510.0f,     0x00ff0000, },
+			{ -10.0f, 10.0f, 510.0f,      0x00ff0000, },
+			{ 10.0f, 10.0f, 510.0f,       0x00ff0000, },
+			{ 10.0f, 10.0f, 200.0f,       0x000000ff, },
+			{ 10.0f, -10.0f, 200.0f,      0x00ff0000, },
+			{ 10.0f, 10.0f, 200.0f,       0x000000ff, },
+			{ -10.0f, 10.0f, 200.0f,      0x000000ff, },
+			{ -10.0f, 10.0f, 510.0f,      0x00ff0000, },
+			{ 10.0f, 10.0f, 510.0f,       0x00ff0000, },
+			{ 10.0f, -10.0f, 510.0f,      0x000000ff, },
+
+
+		};
+
+		// Create the vertex buffer.
+		if (FAILED(pDevice->CreateVertexBuffer(16 * sizeof(CUSTOMVERTEX),0, D3DFVF_CUSTOMVERTEX,D3DPOOL_DEFAULT, &g_pVB, NULL)))
+			ImGui::Text("failCreateVertex");
+
+		// Fill the vertex buffer.
+		VOID* pVertices;
+		if (FAILED(g_pVB->Lock(0, sizeof(g_Vertices), (void**)&pVertices, 0)))
+			ImGui::Text("faillockVertex");
+		memcpy(pVertices, g_Vertices, sizeof(g_Vertices));
+		g_pVB->Unlock();
+
+		pDevice->SetStreamSource(0, g_pVB, 0, sizeof(CUSTOMVERTEX));
+		pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
+		pDevice->DrawPrimitive(D3DPT_LINESTRIP, 0, 16);
+		ImGui::SameLine();
+		ImGui::Text("qua");
+
+	}
+	/*
+	
+	тут фигурируют координаты на миникарте в регистрах r8 и r9
+	ј ещЄ что-то внутри говорит, что бывает и в r10. Ќе знаю, € уже потрачен, не могу подтвердить
+	Address of signature = server.dll + 0x00B2B0F9
+"\x8B\x5C\x00\x00\x48\x8D\x00\x00\x00\x00\x00\x8B\x7C", "xx??xx?????xx"
+"8B 5C ? ? 48 8D ? ? ? ? ? 8B 7C"
+	
+	*/
+
+	ImGui::Checkbox("if you need to input coords", &disableinput);
+	ImGui::Text("Draw squares");
+	ImGui::SameLine();
+	ImGui::Checkbox("##draw_square_at_3d_coords", &draw_square_at_3d_coords);
+	if (draw_square_at_3d_coords)
+	{
+		memset(PointsToDraw_Names, 0, blyaaaa);
+		for (int i = blyaaaa; i >= 0; i -= 4)
+		{
+			memset(PointsToDraw_Names + i, (short)'##', 2);
+		}
+		ImGui::Text("How much:");
+		ImGui::SameLine();
+		ImGui::InputInt("##how_much_squares", &how_much_squares, 1, 0);
+		if (how_much_squares > 20)
+			how_much_squares = 20;
+		for (int i = 1; i <= how_much_squares; i++)
+		{
+			auto pizdec = i * 4 - 2;
+			PointsToDraw_Names[pizdec] = (char)i + 0x19;
+			ImGui::InputFloat(PointsToDraw_Names + pizdec -2,&pointstodraw[how_much_squares][0]);
+			pizdec = i * 4 - 2 + 20;
+			PointsToDraw_Names[pizdec] = (char)i + 0x39;
+			ImGui::InputFloat(PointsToDraw_Names + pizdec -2, &pointstodraw[how_much_squares][1]);
+			pizdec = i * 4 - 2 + 40;
+			PointsToDraw_Names[pizdec] = (char)i + 0x59;
+			ImGui::InputFloat(PointsToDraw_Names + pizdec -2, &pointstodraw[how_much_squares][2]);
+			if (fuckingMatrix && fuckingMatrixValid)
+				for (int i = 0; i< how_much_squares; i++)
+					DrawQuad3D(pointstodraw[i],pDevice);
+		}
+	}
 	/*ImGui::Text("No Pings");
 	ImGui::SameLine();
 	ImGui::Checkbox("(not full disabled yet)", &NoPings);

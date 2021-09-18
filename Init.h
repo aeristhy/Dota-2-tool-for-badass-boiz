@@ -9,7 +9,6 @@
 #include "connector.h"
 #include "WndProc.h"
 #include "Render.h"
-#include "sig.h"
 #include "interfaces.h"
 #include "PatternFinder.h"
 #pragma warning(disable : 4996)
@@ -76,7 +75,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
             && !strstr(typeName, "CDOTA_Item_Ward_Dispenser") && !strstr(typeName, "CAdditionalWearable")
 
 
-            )//0x00007ffbaf91a7b0 "C_DOTA_PortraitBaseModel"
+            )
             for (int meow = 0; meow < xlam_slots; meow++)
             {
                 if (xlam[meow])
@@ -85,11 +84,6 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
                 break;
             }
     }
-    /*if (strstr(typeName, "C_DOTAWorldParticleSystem"))
-    {      
-        WorldParticleSystem = (__int64*)ptr;
-        printf("\nAdded WorldParticleSystem: %llx", WorldParticleSystem);
-    }*/
 
 #endif
     return OnAddEntityRet(ecx, ptr, index);
@@ -157,15 +151,14 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
 }
 
 void Init()
-{
-	d::Init();
- 
+{ 
     bool res = false;
 	while (!res)
 	{
         res = GetD3D9Device(d3d9Device, sizeof(d3d9Device));
 	}
    
+
     while (!ProcessWindowHandle)
         ProcessWindowHandle = FindWindowA("SDL_app", 0);
 
@@ -173,65 +166,40 @@ void Init()
     AllocConsole();
     freopen("CONOUT$", "a+", stdout);
 #endif
-
+  
+    auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",   "48 8B 01 48 8B 51 ?? 48 FF");
+    auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",  "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
+    auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",   "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
+    auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll",   "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
+    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",   "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
+    IsVisibleByTeam = (t4)PatternFinder::PatternScan((char*)"client.dll",               "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
+#ifdef _DEBUG
+    CalculateCastRange                    = (t3)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
+    DrawParticleOnEntity                  = (t5)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
+    FindOrCreateParticleOrSomething       = (t6)PatternFinder::PatternScan((char*)"particles.dll",    "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
+    PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll",       "F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
+    auto ParticleNameCutter                   = PatternFinder::PatternScan((char*)"particles.dll",    "0F B6 ?? 4C 8B ?? 44 8B");
+    stricmp_valve                         = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
     /*
-    
-Address of signature = client.dll + 0x00BB60D0
-"\x48\x89\x00\x00\x00\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x00\x00\x00\x8B\xFA\x48\x8B\x00\x48\x85", "xx???xxxx?xx?????xxxx?xx"
-"48 89 ? ? ? 57 48 83 EC ? 48 8B ? ? ? ? ? 8B FA 48 8B ? 48 85"
-    */
 
-    /* draws particle
-Address of signature = client.dll + 0x01EB5B40
+Address of signature = tier0.dll + 0x00008E10
+"\x4C\x8B\x00\x48\x3B\x00\x74\x00\x48\x85", "xx?xx?x?xx"
+"4C 8B ? 48 3B ? 74 ? 48 85"
+
+*/
+ /*sub_7FFFD226A100((v5 + 0x124), "particles/ui_mouseactions/range_display.vpcf", 1u, 0i64, 0, &float_zero, 0i64);
+ * client.dll+1AFFCE8 - 48 8D 8E 90040000     - lea rcx,[rsi+00000490] why ida thinks it is 0x124?
+rsi == class of entity to draw around
+
+Address of signature = client.dll + 0x01EDA100
 "\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x55\x41\x00\x41\x00\x48\x8D\x00\x00\x00\x48\x81\xEC\x00\x00\x00\x00\x4C\x8B\x00\x45\x8B", "xx???xx???xx???xx?x?xx???xxx????xx?xx"
 "48 89 ? ? ? 48 89 ? ? ? 48 89 ? ? ? 55 41 ? 41 ? 48 8D ? ? ? 48 81 EC ? ? ? ? 4C 8B ? 45 8B"
 
-rcx == ent->GetParticleMgr()
-rdx == particles/ui_mouseactions/range_display.vpcf
-rsi == вокруг чего рисуем?/hero class
-rdi == radius
-*/
-    
-    auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll", "48 8B 01 48 8B 51 ?? 48 FF");
-    auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll", "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
-    auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
-    auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
-    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll", "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
-    IsVisibleByTeam = (t4)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
-#ifdef _DEBUG
-    CalculateCastRange          = (t3)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
-    DrawParticleOnEntity        = (t5)PatternFinder::PatternScan((char*)"client.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
-    FindOrCreateParticleOrSomething = (t6)PatternFinder::PatternScan((char*)"particles.dll", "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
-    PingCoordinateWriter  = (__int64*)PatternFinder::PatternScan((char*)"client.dll", "F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
-    auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll", "0F B6 ?? 4C 8B ?? 44 8B");
-#endif
-    /*
-    * particle name cutter
-    Address of signature = particles.dll + 0x0026E250
-"\x0F\xB6\x00\x4C\x8B\x00\x44\x8B", "xx?xx?xx"
-"0F B6 ? 4C 8B ? 44 8B"
-    */
-    /*
-    
-    Address of signature = particles.dll + 0x00038FD0
-"\x48\x8B\x00\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8B", "xx?xxxx????xx"
-"48 8B ? 57 48 81 EC ? ? ? ? 48 8B"
-    */
 
-    /*
-   Address of signature = client.dll + 0x01EB625D
-"\x41\x0F\x00\x00\x48\x8B\x00\x4C\x8B\x00\x41\xB1", "xx??xx?xx?xx"
-"41 0F ? ? 48 8B ? 4C 8B ? 41 B1"
-    */
-    
-    //"48 89 ?? ?? ?? 57 48 83 EC ?? 48 8D ?? ?? ?? ?? ?? 48 8B ?? 48 89 ?? 8B FA 48 83 C1 ?? F6 01 ?? 74 ?? 4C 8B ?? 41 F6 C0 ?? 75 ?? 49 83 E0 ?? EB ?? 41 8B ?? D1 E8 A8 ?? 75 ?? 49 83 E0 ?? 4D 8B ?? 4D 85 ?? 75 ?? E8 ?? ?? ?? ?? 40 F6 C7 ?? 74 ?? BA ?? ?? ?? ?? 48 8B ?? E8 ?? ?? ?? ?? 48 8B ?? 48 8B ?? ?? ?? 48 83 C4 ?? 5F C3"
-    //some prticle bullshit processor
+ */
 
-
-    
-    //i dont even remember what the //// is CalculateCastRange.....................
 #pragma warning(disable : 4477) //to prevent flood in IDE output
-#ifdef _DEBUG
+
     if (InBattleCameraFunc == nullptr)///////////////////////
         printf("\nERROR: InBattleCameraFunc sig not found");
     else
@@ -276,6 +244,10 @@ rdi == radius
         printf("\nERROR: ParticleNameCutter sig not found");
     else
         printf("\nParticleNameCutter: \t%llx", ParticleNameCutter);
+    if (stricmp_valve == nullptr)///////////////////////
+        printf("\nERROR: stricmp_valve sig not found");
+    else
+        printf("\nstricmp_valve: \t%llx", stricmp_valve);
 #endif
     
 

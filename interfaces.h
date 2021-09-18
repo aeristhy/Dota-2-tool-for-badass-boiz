@@ -3,7 +3,6 @@
 #include "pch.h"
 #include "CGameEntitySystem.h"
 #include "IAppSystem.h"
-#include "sig.h"
 
 void* GetInterface(const char* dllname, const char* interfacename) {
 	auto mhandle = GetModuleHandleA(dllname);

@@ -454,7 +454,7 @@ public:
 		backVP(address, sz);
 		return slot;
 	}
-	//some times all you need to do, it is execute original code before your asm injection
+	//sometimes all you need to do, it is execute original code before your asm injection
 	//original_code->your code
 	int set_reg_stealer_reverse(char* address, int sz, char* container, r RegToSteal)
 	{

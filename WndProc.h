@@ -9,5 +9,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	//ProcessWindowHandle = hWnd;
 	ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam); 
 
-	return CallWindowProc((WNDPROC)ProcessOldWndProc, hWnd, msg, wParam, lParam);
+	if (!disableinput)
+		return CallWindowProc((WNDPROC)ProcessOldWndProc, hWnd, msg, wParam, lParam);
 }

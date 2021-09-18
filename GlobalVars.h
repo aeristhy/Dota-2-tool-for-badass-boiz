@@ -9,6 +9,7 @@
 Misc
 */
 
+LPDIRECT3DDEVICE9 pDevice_ = 0;
 DWORD	trashbox = 0;
 
 #define TeamSize		5
@@ -38,6 +39,9 @@ bool DrawHealthPanel = 0;
 bool TrueHero = 0;
 bool NoPings = 0;
 bool enemyCD = 0;
+bool draw_square_at_3d_coords = 0;
+bool disableinput = 0;
+bool draw3dbox = 0;
 
 /*
 Entity
@@ -45,12 +49,12 @@ Entity
 CBaseEntity*	heroes[heroes_slots];
 CBaseEntity*	LocalPlayer = 0;
 char			LocalPlayerID = 0;
-#ifdef _DEBUG
+//#ifdef _DEBUG
 #define Modifiers_Cap 16
 Modifier*		Modifiers[heroes_slots][Modifiers_Cap];
 char			LastModifiersCount[heroes_slots][1];
 char*			xlamValidToVisibleCheck[100][256];
-#endif
+//#endif
 DOTATeam_t	localPlayerTeam;
 DOTATeam_t	EnemyTeam;
 
@@ -58,9 +62,13 @@ DOTATeam_t	EnemyTeam;
 /*
 settings visual
 */
-
+#define blyaaaa 240
+char	PointsToDraw_Names[blyaaaa];//60 names with 4 chars ##q\0
+float   pointstodraw[20][3];
+int		how_much_squares = 0;
 DWORD	quad_color = 0x000000FF;
 DWORD	quad_color2 = 0x00FFFF00;
+D3DVIEWPORT9 view;
 
 /*
 Hooks and it's stuff
