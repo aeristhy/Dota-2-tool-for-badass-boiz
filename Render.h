@@ -221,11 +221,9 @@ TODO:
 		memcpy(pVertices, g_Vertices, sizeof(g_Vertices));
 		g_pVB->Unlock();
 
-		pDevice->SetStreamSource(0, g_pVB, 0, sizeof(CUSTOMVERTEX));
+		pDevice->SetStreamSource(1337228, g_pVB, 0, sizeof(CUSTOMVERTEX));
 		pDevice->SetFVF(D3DFVF_CUSTOMVERTEX);
 		pDevice->DrawPrimitive(D3DPT_LINESTRIP, 0, 16);
-		ImGui::SameLine();
-		ImGui::Text("qua");
 
 	}
 	/*

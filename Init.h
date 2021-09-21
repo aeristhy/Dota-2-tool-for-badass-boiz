@@ -141,6 +141,8 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
     {
         LocalPlayer = 0;
         LocalPlayerID = 0;
+        for (char i = 0; i < heroes_slots; i++)
+            LastModifiersCount[i][0] = 0;
 //#ifdef _DEBUG
 //        for (char i = 0; i < heroes_slots; i++)
 //            for (char q = 0; q < Modifiers_Cap; q++)
@@ -167,20 +169,28 @@ void Init()
     freopen("CONOUT$", "a+", stdout);
 #endif
   
-    auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",   "48 8B 01 48 8B 51 ?? 48 FF");
-    auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",  "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
-    auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",   "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
-    auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll",   "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
-    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",   "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
-    IsVisibleByTeam = (t4)PatternFinder::PatternScan((char*)"client.dll",               "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
+    auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",          "48 8B 01 48 8B 51 ?? 48 FF");
+    auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",         "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
+    auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",          "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
+    auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll",          "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
+    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",          "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
+    IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
 #ifdef _DEBUG
-    CalculateCastRange                    = (t3)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
-    DrawParticleOnEntity                  = (t5)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
-    FindOrCreateParticleOrSomething       = (t6)PatternFinder::PatternScan((char*)"particles.dll",    "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
-    PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll",       "F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
-    auto ParticleNameCutter                   = PatternFinder::PatternScan((char*)"particles.dll",    "0F B6 ?? 4C 8B ?? 44 8B");
-    stricmp_valve                         = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
+    CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
+    DrawParticleOnEntity            = (t5)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
+    FindOrCreateParticleOrSomething = (t6)PatternFinder::PatternScan((char*)"particles.dll",   "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
+    PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll","F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
+    auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll",        "0F B6 ?? 4C 8B ?? 44 8B");
+    stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
+
     /*
+
+    Address of signature = engine2.dll + 0x000C7F30
+"\x48\x89\x00\x00\x00\x44\x89\x00\x00\x00\x48\x89\x00\x00\x00\x55\x56\x57\x41\x00\x41\x00\x41\x00\x41\x00\x48\x81\xEC", "xx???xx???xx???xxxx?x?x?x?xxx"
+"48 89 ? ? ? 44 89 ? ? ? 48 89 ? ? ? 55 56 57 41 ? 41 ? 41 ? 41 ? 48 81 EC"
+
+__int64 __fastcall sub_7FFA7FC67F30(__int64 *CNetworkStringTable, __int64 CServerSideClient, __int64 a3, int a4)
+
 
 Address of signature = tier0.dll + 0x00008E10
 "\x4C\x8B\x00\x48\x3B\x00\x74\x00\x48\x85", "xx?xx?x?xx"
@@ -248,6 +258,7 @@ Address of signature = client.dll + 0x01EDA100
         printf("\nERROR: stricmp_valve sig not found");
     else
         printf("\nstricmp_valve: \t%llx", stricmp_valve);
+    
 #endif
     
 

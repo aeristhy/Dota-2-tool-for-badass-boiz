@@ -133,8 +133,6 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				
 				if (heroTeam != EnemyTeam)
 				{
-					//DrawParticleOnEntity(hero->GetParticleMgr(), "particles/ui_mouseactions/range_display.vpcf", hero, 500);//0, 1);
-					//FindOrCreateParticleOrSomething(CParticleSystemMgrPtr, hero->GetA40()->Get2C8(), "particles/ui_mouseactions/range_display.vpcf", 1);
 					int c = hero->GetModifiersCount();
 					auto ModPool = hero->GetModifiersPool();
 					LastModifiersCount[i][0] = c;
@@ -154,8 +152,6 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 					if (heroIsVisible)
 					{
 						DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
-						float hmhmhm = 0.0;
-						//DrawParticleOnEntity(hero->GetParticleMgr(), "particles/ui_mouseactions/range_display.vpcf", 1, 0, 0, &hmhmhm, 0);
 					}
 				}
 				else //if heroTeam==EnemyTeam
