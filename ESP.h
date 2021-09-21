@@ -11,10 +11,7 @@ void DrawFilledRect11(int x, int y, int w, int h, D3DCOLOR color, IDirect3DDevic
 	D3DRECT BarRect = { x, y, x + w, y + h };
 	dev->Clear(1, &BarRect, D3DCLEAR_TARGET | D3DCLEAR_TARGET, color, 0, 0);
 }
-struct vec2 {
-	int x;
-	int y;
-};
+
 
 
 bool WorldToScreen(D3DVECTOR pos, vec2* screen, float matrix[16], int windowWidth, int windowHeight)

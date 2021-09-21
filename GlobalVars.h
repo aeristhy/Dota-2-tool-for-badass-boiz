@@ -4,11 +4,18 @@
 #include "CGameEntitySystem.h"
 #include "vector.h"
 
+struct vec2 {
+	int x;
+	int y;
+};
 
 /*
 Misc
 */
 
+char undercursor_buff[256];
+vec2 undercursor_screen;
+vec2 undercursor_screen_point;
 LPDIRECT3DDEVICE9 pDevice_ = 0;
 DWORD	trashbox = 0;
 
@@ -42,6 +49,7 @@ bool enemyCD = 0;
 bool draw_square_at_3d_coords = 0;
 bool disableinput = 0;
 bool draw3dbox = 0;
+bool UnderCursor = 0;
 
 /*
 Entity

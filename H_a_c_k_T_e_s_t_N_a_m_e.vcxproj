@@ -184,6 +184,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Schema.h" />
+    <ClInclude Include="SelectableUnitCollidedWithCursor.h" />
     <ClInclude Include="Sync.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="WndProc.h" />

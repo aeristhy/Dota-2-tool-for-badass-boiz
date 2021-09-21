@@ -38,6 +38,8 @@ rsi == class of entity to draw around
 
 typedef __int64*(__fastcall* t6)(__int64* CParticleSystemMgrPtr, Nekto2C8 var,const char* particleName, char a4);
 typedef __int64*(__fastcall* t7)(char* str0, char* str1);//test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
+typedef char	(__fastcall* t8)(CBaseEntity* Hero, const char* FigureOutWhat, float* Coordinate);
+
 
 
 
@@ -55,3 +57,4 @@ t4		IsVisibleByTeam		= 0;
 t5		DrawParticleOnEntity= 0;
 t6		FindOrCreateParticleOrSomething = 0;
 t7		stricmp_valve		= 0; //test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
+t8		SelectableUnitCollidedWithCursor_Original = 0;

@@ -11,6 +11,7 @@
 #include "Render.h"
 #include "interfaces.h"
 #include "PatternFinder.h"
+#include "SelectableUnitCollidedWithCursor.h"
 #pragma warning(disable : 4996)
 
 
@@ -182,8 +183,13 @@ void Init()
     PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll","F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
     auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll",        "0F B6 ?? 4C 8B ?? 44 8B");
     stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
-
+    
+    auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll","40 ?? 56 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 49 8B ?? 48 8B ?? 48 8B ?? FF 50 ?? 48 8B ?? 48 8B ?? ?? ?? ?? ?? 48 85 ?? 0F 84 ?? ?? ?? ?? 48 83 38 ?? 0F 84 ?? ?? ?? ?? 48 89 ?? ?? ?? 33 DB 48 85 ?? 74 ?? 38 1F");
     /*
+
+   Address of signature = client.dll + 0x00931950
+"\x40\x00\x56\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x00\x00\x00\x49\x8B\x00\x48\x8B\x00\x48\x8B\x00\xFF\x50\x00\x48\x8B\x00\x48\x8B\x00\x00\x00\x00\x00\x48\x85\x00\x0F\x84\x00\x00\x00\x00\x48\x83\x38\x00\x0F\x84\x00\x00\x00\x00\x48\x89\x00\x00\x00\x33\xDB\x48\x85\x00\x74\x00\x38\x1F", "x?xxxxx?xx?????xx?xx?xx?xx?xx?xx?????xx?xx????xxx?xx????xx???xxxx?x?xx"
+"40 ? 56 57 48 83 EC ? 48 8B ? ? ? ? ? 49 8B ? 48 8B ? 48 8B ? FF 50 ? 48 8B ? 48 8B ? ? ? ? ? 48 85 ? 0F 84 ? ? ? ? 48 83 38 ? 0F 84 ? ? ? ? 48 89 ? ? ? 33 DB 48 85 ? 74 ? 38 1F"
 
     Address of signature = engine2.dll + 0x000C7F30
 "\x48\x89\x00\x00\x00\x44\x89\x00\x00\x00\x48\x89\x00\x00\x00\x55\x56\x57\x41\x00\x41\x00\x41\x00\x41\x00\x48\x81\xEC", "xx???xx???xx???xxxx?x?x?x?xxx"
@@ -258,7 +264,11 @@ Address of signature = client.dll + 0x01EDA100
         printf("\nERROR: stricmp_valve sig not found");
     else
         printf("\nstricmp_valve: \t%llx", stricmp_valve);
-    
+    if (WTGSelectableUnitCollidedWithCursor == nullptr)///////////////////////
+        printf("\nERROR: WTGSelectableUnitCollidedWithCursor sig not found");
+    else
+        printf("\nWTGSelectableUnitCollidedWithCursor: \t%llx", WTGSelectableUnitCollidedWithCursor);
+
 #endif
     
 
@@ -268,7 +278,9 @@ Address of signature = client.dll + 0x01EDA100
     hk.set_reg_stealer_reverse((char*)WTGViewMatrix, 16, (char*)&fuckingMatrix, r::rax);
     //hk.set_reg_stealer((char*)WTGCParticleSystemMgr, 17, (char*)&CParticleSystemMgrPtr, r::rcx);
     TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
-
+#ifdef _DEBUG
+    hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 15, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
+#endif
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     

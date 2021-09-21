@@ -177,6 +177,9 @@ TODO:
 	ImGui::SameLine();
 	ImGui::Checkbox("##xui", &DrawModifiersPanel);
 #ifdef _DEBUG
+	ImGui::Text("UnderCursor");
+	ImGui::SameLine();
+	ImGui::Checkbox("##undercursor", &UnderCursor);
 	ImGui::Text("Draw 3D box");
 	ImGui::SameLine();
 	ImGui::Checkbox("##d3dbox",&draw3dbox);
@@ -267,6 +270,17 @@ TODO:
 				for (int i = 0; i< how_much_squares; i++)
 					DrawQuad3D(pointstodraw[i],pDevice);
 		}
+	}
+	if (fuckingMatrix && fuckingMatrixValid && UnderCursor)
+	{
+		RECT r;
+		r.left = undercursor_screen.x;
+		r.right = r.left + 500;
+		r.top = undercursor_screen.y;
+		r.bottom = undercursor_screen.y + 100;
+
+		font->DrawTextA(0, undercursor_buff, (INT)strlen(undercursor_buff), &r, 0, D3DCOLOR_ARGB(255, 0xAA, 0xEE, 0xEE));
+		DrawFilledRect11(undercursor_screen_point.x, undercursor_screen_point.y, 10, 10, D3DCOLOR_ARGB(255, 0xAA, 0xEE, 0xEE), pDevice_);
 	}
 	/*ImGui::Text("No Pings");
 	ImGui::SameLine();
