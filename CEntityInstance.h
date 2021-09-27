@@ -123,12 +123,16 @@ public:
 	}
 };
 
-class Skeleton
+class NetworkVar_m_skeletonInstance
 {
 public:
 	__inline float* GetPos()
 	{
 		return (float*)((char*)this + 0x10);
+	}
+	__inline __int64* GetHeroBySkeleton()
+	{
+		return (__int64*)*((char*)this + 0x30);
 	}
 };
 
@@ -273,9 +277,9 @@ public:
 
 
 
-	__inline Skeleton* GetSleleton()
+	__inline NetworkVar_m_skeletonInstance* GetSleleton()
 	{
-		return (Skeleton*)*(__int64*)((char*)this + 0x310);
+		return (NetworkVar_m_skeletonInstance*)*(__int64*)((char*)this + 0x310);
 	}
 	__inline __int32 GetMaxHealth()
 	{

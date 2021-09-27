@@ -184,8 +184,42 @@ void Init()
     auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll",        "0F B6 ?? 4C 8B ?? 44 8B");
     stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
     
-    auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll","40 ?? 56 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 49 8B ?? 48 8B ?? 48 8B ?? FF 50 ?? 48 8B ?? 48 8B ?? ?? ?? ?? ?? 48 85 ?? 0F 84 ?? ?? ?? ?? 48 83 38 ?? 0F 84 ?? ?? ?? ?? 48 89 ?? ?? ?? 33 DB 48 85 ?? 74 ?? 38 1F");
+    auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
+    //auto CInputService_StaticAddress PatternFinder::PatternScan((char*)"client.dll", "48 8B ?? ?? ?? ?? ?? 4C 8D ?? ?? 48 8D ?? ?? 48 8B ?? FF 90 ?? ?? ?? ?? 4C 8B");
+    //auto attach_hitloc = PatternFinder::PatternScan((char*)"client.dll", "F3 0F ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F2 0F ?? ?? ?? 4C 8D");
     /*
+    new mask for WTGSelectableUnitCollidedWithCursor
+    Address of signature = client.dll + 0x00A3DB30
+"\x4C\x8B\x00\x55\x57\x41\x00\x48\x81\xEC\x00\x00\x00\x00\x48\x8B", "xx?xxx?xxx????xx"
+"4C 8B ? 55 57 41 ? 48 81 EC ? ? ? ? 48 8B"
+    
+    
+    
+    .................
+    CInputService
+Address of signature = client.dll + 0x00CBFE44
+"\x48\x8B\x00\x00\x00\x00\x00\x4C\x8D\x00\x00\x48\x8D\x00\x00\x48\x8B\x00\xFF\x90\x00\x00\x00\x00\x4C\x8B", "xx?????xx??xx??xx?xx????xx"
+"48 8B ? ? ? ? ? 4C 8D ? ? 48 8D ? ? 48 8B ? FF 90 ? ? ? ? 4C 8B"
+
+
+7FFBF2ADFE44 mov reg,[7FFBF2ADFE44 + 0000029FF785+7]
+7FFBF54DF5D0 CInputService
+
+0000029FF785+7
+
+.................
+attach_hitloc
+
+Address of signature = client.dll + 0x00CBFE89
+"\x48\x8D\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x84\xC0\x75\x00\x49\x8B", "xx?????x????xxx?xx"
+"48 8D ? ? ? ? ? E8 ? ? ? ? 84 C0 75 ? 49 8B"
+
+zapaska 
+Address of signature = client.dll + 0x00CBFEAC
+"\xF3\x0F\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF2\x0F\x00\x00\x00\x4C\x8D", "xx??xx???xx???xx???xx???xx???xx???xx"
+"F3 0F ? ? F3 0F ? ? ? F3 0F ? ? ? F3 0F ? ? ? F3 0F ? ? ? F3 0F ? ? ? F2 0F ? ? ? 4C 8D"
+
+-----------------
 
    Address of signature = client.dll + 0x00931950
 "\x40\x00\x56\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x00\x00\x00\x49\x8B\x00\x48\x8B\x00\x48\x8B\x00\xFF\x50\x00\x48\x8B\x00\x48\x8B\x00\x00\x00\x00\x00\x48\x85\x00\x0F\x84\x00\x00\x00\x00\x48\x83\x38\x00\x0F\x84\x00\x00\x00\x00\x48\x89\x00\x00\x00\x33\xDB\x48\x85\x00\x74\x00\x38\x1F", "x?xxxxx?xx?????xx?xx?xx?xx?xx?xx?????xx?xx????xxx?xx????xx???xxxx?x?xx"
@@ -213,6 +247,7 @@ Address of signature = client.dll + 0x01EDA100
 
 
  */
+
 
 #pragma warning(disable : 4477) //to prevent flood in IDE output
 
@@ -267,7 +302,7 @@ Address of signature = client.dll + 0x01EDA100
     if (WTGSelectableUnitCollidedWithCursor == nullptr)///////////////////////
         printf("\nERROR: WTGSelectableUnitCollidedWithCursor sig not found");
     else
-        printf("\nWTGSelectableUnitCollidedWithCursor: \t%llx", WTGSelectableUnitCollidedWithCursor);
+        printf("\n WTGSelectableUnitCollidedWithCursor: \t%llx", WTGSelectableUnitCollidedWithCursor);
 
 #endif
     
@@ -279,7 +314,8 @@ Address of signature = client.dll + 0x01EDA100
     //hk.set_reg_stealer((char*)WTGCParticleSystemMgr, 17, (char*)&CParticleSystemMgrPtr, r::rcx);
     TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
 #ifdef _DEBUG
-    hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 15, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
+    hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 14, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
+    //(05.09.2021) 15 -> 14 (27.09.2021)
 #endif
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 

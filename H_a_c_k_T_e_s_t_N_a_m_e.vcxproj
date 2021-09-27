@@ -172,6 +172,7 @@
     <ClInclude Include="CDOTA_Camera.h" />
     <ClInclude Include="CEntityInstance.h" />
     <ClInclude Include="CGameEntitySystem.h" />
+    <ClInclude Include="CInputService.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="connector.h" />
     <ClInclude Include="ESP.h" />

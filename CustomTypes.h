@@ -38,7 +38,7 @@ rsi == class of entity to draw around
 
 typedef __int64*(__fastcall* t6)(__int64* CParticleSystemMgrPtr, Nekto2C8 var,const char* particleName, char a4);
 typedef __int64*(__fastcall* t7)(char* str0, char* str1);//test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
-typedef char	(__fastcall* t8)(CBaseEntity* Hero, const char* FigureOutWhat, float* Coordinate);
+typedef char	(__fastcall* t8)(NetworkVar_m_skeletonInstance* HeroSkeleton, char* reserved, char* Coordinate);
 
 
 
