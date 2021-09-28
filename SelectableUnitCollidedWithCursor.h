@@ -26,8 +26,9 @@ char __fastcall SelectableUnitCollidedWithCursor(NetworkVar_m_skeletonInstance* 
 
 	
 		memset(undercursor_buff, 0, 256);
-
-		strcat(undercursor_buff, SomeText);
+        auto ent = (CBaseEntity*)HeroSkeleton->GetHeroBySkeleton();
+        sprintf(undercursor_buff, "%d", ent->GetCurrentHealth());
+        undercursor_time = GetTickCount();
 		
 		undercursor_screen_point.x = undercursor_screen.x - 100;
 		undercursor_screen_point.y = undercursor_screen.y - 50;

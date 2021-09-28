@@ -176,6 +176,8 @@ void Init()
     auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll",          "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
     auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",          "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
     IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
+    auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
+
 #ifdef _DEBUG
     CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
     DrawParticleOnEntity            = (t5)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
@@ -184,7 +186,6 @@ void Init()
     auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll",        "0F B6 ?? 4C 8B ?? 44 8B");
     stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
     
-    auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
     //auto CInputService_StaticAddress PatternFinder::PatternScan((char*)"client.dll", "48 8B ?? ?? ?? ?? ?? 4C 8D ?? ?? 48 8D ?? ?? 48 8B ?? FF 90 ?? ?? ?? ?? 4C 8B");
     //auto attach_hitloc = PatternFinder::PatternScan((char*)"client.dll", "F3 0F ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F2 0F ?? ?? ?? 4C 8D");
     /*
@@ -313,10 +314,8 @@ Address of signature = client.dll + 0x01EDA100
     hk.set_reg_stealer_reverse((char*)WTGViewMatrix, 16, (char*)&fuckingMatrix, r::rax);
     //hk.set_reg_stealer((char*)WTGCParticleSystemMgr, 17, (char*)&CParticleSystemMgrPtr, r::rcx);
     TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
-#ifdef _DEBUG
     hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 14, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
     //(05.09.2021) 15 -> 14 (27.09.2021)
-#endif
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     

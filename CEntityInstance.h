@@ -132,7 +132,8 @@ public:
 	}
 	__inline __int64* GetHeroBySkeleton()
 	{
-		return (__int64*)*((char*)this + 0x30);
+		auto q = (char*)this + 0x30;
+		return *(__int64**)q;
 	}
 };
 

@@ -289,14 +289,17 @@ void OutputModifiers()
 #ifdef _DEBUG
 
 
-void DrawQuad3D(float* q, LPDIRECT3DDEVICE9 pDevice)
+void DrawQuad3D(float q, float w, float e, LPDIRECT3DDEVICE9 pDevice)
 {
 	vec2 screen;
 	screen.x = 0;
 	screen.y = 0;
-
+	D3DVECTOR qwe;
+	qwe.x = q;
+	qwe.y = w;
+	qwe.z = e;
 	long long temp = fuckingMatrix + 0x288;
-	WorldToScreen(*(D3DVECTOR*)q, &screen, (float*)temp, view.Width, view.Height);
+	WorldToScreen(qwe, &screen, (float*)temp, view.Width, view.Height);
 	DrawFilledRect11(screen.x, screen.y, 5, 5, D3DCOLOR_ARGB(255, 0xAA, 0xAA, 0xEE), pDevice);
 
 }

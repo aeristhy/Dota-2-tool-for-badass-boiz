@@ -16,6 +16,7 @@ Misc
 char undercursor_buff[256];
 vec2 undercursor_screen;
 vec2 undercursor_screen_point;
+DWORD undercursor_time = 0;
 LPDIRECT3DDEVICE9 pDevice_ = 0;
 DWORD	trashbox = 0;
 

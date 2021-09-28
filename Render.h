@@ -176,10 +176,10 @@ TODO:
 	ImGui::Text("Modifiers panel");
 	ImGui::SameLine();
 	ImGui::Checkbox("##xui", &DrawModifiersPanel);
-#ifdef _DEBUG
 	ImGui::Text("UnderCursor");
 	ImGui::SameLine();
 	ImGui::Checkbox("##undercursor", &UnderCursor);
+#ifdef _DEBUG
 	ImGui::Text("Draw 3D box");
 	ImGui::SameLine();
 	ImGui::Checkbox("##d3dbox",&draw3dbox);
@@ -266,12 +266,13 @@ TODO:
 			pizdec = i * 4 - 2 + 40;
 			PointsToDraw_Names[pizdec] = (char)i + 0x59;
 			ImGui::InputFloat(PointsToDraw_Names + pizdec -2, &pointstodraw[how_much_squares][2]);
-			if (fuckingMatrix && fuckingMatrixValid)
-				for (int i = 0; i< how_much_squares; i++)
-					DrawQuad3D(pointstodraw[i],pDevice);
 		}
+		if (fuckingMatrix && fuckingMatrixValid)
+			for (int i = 1; i < how_much_squares + 1; i++)
+				DrawQuad3D(pointstodraw[i][0], pointstodraw[i][1], pointstodraw[i][2], pDevice);
 	}
-	if (fuckingMatrix && fuckingMatrixValid && UnderCursor)
+#endif
+	if (fuckingMatrix && fuckingMatrixValid && UnderCursor && (GetTickCount() - undercursor_time) < 2000 )
 	{
 		RECT r;
 		r.left = undercursor_screen.x;
@@ -280,7 +281,7 @@ TODO:
 		r.bottom = undercursor_screen.y + 100;
 
 		font->DrawTextA(0, undercursor_buff, (INT)strlen(undercursor_buff), &r, 0, D3DCOLOR_ARGB(255, 0xAA, 0xEE, 0xEE));
-		DrawFilledRect11(undercursor_screen_point.x, undercursor_screen_point.y, 10, 10, D3DCOLOR_ARGB(255, 0xAA, 0xEE, 0xEE), pDevice_);
+		//DrawFilledRect11(undercursor_screen_point.x, undercursor_screen_point.y, 10, 10, D3DCOLOR_ARGB(255, 0xAA, 0xEE, 0xEE), pDevice_);
 	}
 	/*ImGui::Text("No Pings");
 	ImGui::SameLine();
@@ -288,7 +289,7 @@ TODO:
 	ImGui::Text("Spell CD");
 	ImGui::SameLine();
 	ImGui::Checkbox("##", &enemyCD);*/
-#endif
+
 	ImGui::End();
 
 
