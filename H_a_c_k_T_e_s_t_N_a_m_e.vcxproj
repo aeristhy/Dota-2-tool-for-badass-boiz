@@ -169,12 +169,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CConVar.h" />
     <ClInclude Include="CDOTA_Camera.h" />
     <ClInclude Include="CEntityInstance.h" />
     <ClInclude Include="CGameEntitySystem.h" />
     <ClInclude Include="CInputService.h" />
+    <ClInclude Include="cl_particle_simulate.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="connector.h" />
+    <ClInclude Include="CVarChangeCallback.h" />
     <ClInclude Include="ESP.h" />
     <ClInclude Include="GlobalVars.h" />
     <ClInclude Include="CustomTypes.h" />

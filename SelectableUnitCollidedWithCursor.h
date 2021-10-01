@@ -14,6 +14,7 @@
 
 char __fastcall SelectableUnitCollidedWithCursor(NetworkVar_m_skeletonInstance* HeroSkeleton, char* reserved, char* SomeText)
 {
+    if (LocalPlayer)
     if (HeroSkeleton)
 	if (UnderCursor && fuckingMatrix && fuckingMatrixValid)
 	{

@@ -185,6 +185,8 @@ void Init()
     PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll","F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
     auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll",        "0F B6 ?? 4C 8B ?? 44 8B");
     stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
+    auto WTGCvarProcessor           = PatternFinder::PatternScan((char*)"particles.dll",        "4C 8B ?? 53 57 48 81 EC");
+
     
     //auto CInputService_StaticAddress PatternFinder::PatternScan((char*)"client.dll", "48 8B ?? ?? ?? ?? ?? 4C 8D ?? ?? 48 8D ?? ?? 48 8B ?? FF 90 ?? ?? ?? ?? 4C 8B");
     //auto attach_hitloc = PatternFinder::PatternScan((char*)"client.dll", "F3 0F ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F2 0F ?? ?? ?? 4C 8D");
@@ -289,7 +291,7 @@ Address of signature = client.dll + 0x01EDA100
     else
         printf("\nFindOrCreateParticleOrSomething: \t%llx", FindOrCreateParticleOrSomething);
     if (PingCoordinateWriter == nullptr)///////////////////////
-        printf("\nERROR: FindOrCreateParticleOrSomething sig not found");
+        printf("\nERROR: PingCoordinateWriter sig not found");
     else
         printf("\nPingCoordinateWriter: \t%llx", PingCoordinateWriter);
     if (ParticleNameCutter == nullptr)///////////////////////
@@ -304,7 +306,10 @@ Address of signature = client.dll + 0x01EDA100
         printf("\nERROR: WTGSelectableUnitCollidedWithCursor sig not found");
     else
         printf("\n WTGSelectableUnitCollidedWithCursor: \t%llx", WTGSelectableUnitCollidedWithCursor);
-
+    if (WTGCvarProcessor == nullptr)///////////////////////
+        printf("\nERROR: WTGCvarProcessor sig not found");
+    else
+        printf("\nWTGCvarProcessor: \t%llx", WTGCvarProcessor);
 #endif
     
 
