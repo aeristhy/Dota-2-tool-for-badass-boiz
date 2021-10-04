@@ -2,7 +2,7 @@
 #include "Include/d3d9.h"
 #include "Include/d3dx9math.h"
 #include "GlobalVars.h"
-
+#include "CConVar.h"
 #define cint64 const __int64
 #define cint   const int
 
@@ -13,7 +13,6 @@ typedef void	(__thiscall* t2)(CGameEntitySystem* ecx, CBaseEntity* ptr, __int32 
 typedef __int32	(__thiscall* t3)(__int64*		ecx);								//CastRange, mother of god...........
 typedef bool	(__thiscall* t4)(CBaseEntity*	ecx, DOTATeam_t team);				//IsVisibleByTeam
 typedef void	(__fastcall* t5)(ParticleMgr* ecx, const char* particleName, cint _1, cint64 _0, cint64 _0_2,float* zero, cint64 _0_3);
-
 /*
 error at 7FFFD22687AF
 Code below. Rax == (__int64)-1
@@ -39,7 +38,7 @@ rsi == class of entity to draw around
 typedef __int64*(__fastcall* t6)(__int64* CParticleSystemMgrPtr, Nekto2C8 var,const char* particleName, char a4);
 typedef __int64*(__fastcall* t7)(char* str0, char* str1);//test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
 typedef char	(__fastcall* t8)(NetworkVar_m_skeletonInstance* HeroSkeleton, char* reserved, char* Coordinate);
-
+typedef void	(__fastcall* t9)(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, __int32* SomethingICantExplain);
 
 
 
@@ -58,3 +57,4 @@ t5		DrawParticleOnEntity= 0;
 t6		FindOrCreateParticleOrSomething = 0;
 t7		stricmp_valve		= 0; //test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
 t8		SelectableUnitCollidedWithCursor_Original = 0;
+t9		ConVarMainProcessor_orig = 0;

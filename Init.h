@@ -12,6 +12,7 @@
 #include "interfaces.h"
 #include "PatternFinder.h"
 #include "SelectableUnitCollidedWithCursor.h"
+#include "CVarChangeCallback.h"
 #pragma warning(disable : 4996)
 
 
@@ -170,23 +171,25 @@ void Init()
     freopen("CONOUT$", "a+", stdout);
 #endif
   
-    auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",          "48 8B 01 48 8B 51 ?? 48 FF");
-    auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",         "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
-    auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",          "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
-    auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll",          "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
-    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",          "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
-    IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
+    auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 8B 01 48 8B 51 ?? 48 FF");
+    auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
+    auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",           "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
+    auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
+    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",           "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
+    IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
     auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
 
 #ifdef _DEBUG
-    CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
-    DrawParticleOnEntity            = (t5)PatternFinder::PatternScan((char*)"client.dll",      "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
-    FindOrCreateParticleOrSomething = (t6)PatternFinder::PatternScan((char*)"particles.dll",   "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
-    PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll","F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
+    CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
+    DrawParticleOnEntity            = (t5)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
+    FindOrCreateParticleOrSomething = (t6)PatternFinder::PatternScan((char*)"particles.dll",    "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
+    PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll", "F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
     auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll",        "0F B6 ?? 4C 8B ?? 44 8B");
     stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
-    auto WTGCvarProcessor           = PatternFinder::PatternScan((char*)"particles.dll",        "4C 8B ?? 53 57 48 81 EC");
-
+    auto WTGCvarProcessor_particle  = PatternFinder::PatternScan((char*)"particles.dll",        "4C 8B ?? 53 57 48 81 EC");
+    auto WTGCvarProcessor_client    = PatternFinder::PatternScan((char*)"client.dll",           "4C 8B ?? 53 57 48 81 EC ?? ?? ?? ?? 0F 29");
+    auto WTGCvarProcessor_main      = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? 48 89 ?? ?? ?? 44 89 ?? ?? ?? 57 41");
+    
     
     //auto CInputService_StaticAddress PatternFinder::PatternScan((char*)"client.dll", "48 8B ?? ?? ?? ?? ?? 4C 8D ?? ?? 48 8D ?? ?? 48 8B ?? FF 90 ?? ?? ?? ?? 4C 8B");
     //auto attach_hitloc = PatternFinder::PatternScan((char*)"client.dll", "F3 0F ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F2 0F ?? ?? ?? 4C 8D");
@@ -306,10 +309,18 @@ Address of signature = client.dll + 0x01EDA100
         printf("\nERROR: WTGSelectableUnitCollidedWithCursor sig not found");
     else
         printf("\n WTGSelectableUnitCollidedWithCursor: \t%llx", WTGSelectableUnitCollidedWithCursor);
-    if (WTGCvarProcessor == nullptr)///////////////////////
-        printf("\nERROR: WTGCvarProcessor sig not found");
+    if (WTGCvarProcessor_particle == nullptr)///////////////////////
+        printf("\nERROR: WTGCvarProcessor_particle sig not found");
     else
-        printf("\nWTGCvarProcessor: \t%llx", WTGCvarProcessor);
+        printf("\nWTGCvarProcessor_particle: \t%llx", WTGCvarProcessor_particle);
+    if (WTGCvarProcessor_client == nullptr)///////////////////////
+        printf("\nERROR: WTGCvarProcessor_client sig not found");
+    else
+        printf("\nWTGCvarProcessor_client: \t%llx", WTGCvarProcessor_client);
+    if (WTGCvarProcessor_main == nullptr)///////////////////////
+        printf("\nERROR: WTGCvarProcessor_main sig not found");
+    else
+        printf("\nWTGCvarProcessor_main: \t%llx", WTGCvarProcessor_main);
 #endif
     
 
@@ -321,6 +332,9 @@ Address of signature = client.dll + 0x01EDA100
     TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
     hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 14, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
     //(05.09.2021) 15 -> 14 (27.09.2021)
+#ifdef _DEBUG
+    hk.set_hook((char*)WTGCvarProcessor_main, 15, (char*)ConVarMainProcessor, (char**)&ConVarMainProcessor_orig);
+#endif
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     
