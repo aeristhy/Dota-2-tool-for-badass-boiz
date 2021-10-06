@@ -49,21 +49,58 @@ VarType WhatIsThisBullshit(char* bullshit)
 #ifdef _DEBUG
 void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, char* SomethingICantExplain)
 {
-	if (!SomethingICantExplain || !(*SomethingICantExplain) || *SomethingICantExplain <= 1 || !ConVar)
-		return ConVarMainProcessor_orig(CInputService,a2,a3,a4,a5,ConVar, (__int32*)SomethingICantExplain);
+	if (!SomethingICantExplain)
+	{
+		auto ConVar_string = (SomethingICantExplain + 8);
+		if (ConVar_string)
+			printf("\n%s", ConVar_string);
+		else
+			printf("\n!SomethingICantExplain && no string (wtf?)");
 
-	auto orig = SomethingICantExplain;
-
-	auto ConVar_elements	= *(__int32*)SomethingICantExplain; 
-	auto ConVar_strlen		= *(__int32*)(SomethingICantExplain + 4);
-	auto ConVar_string		= *(SomethingICantExplain + 8); //"dota_use_particle_fow 1337 ura govno"
-	auto ConVar_command		= ConVar_string;//"dota_use_particle_fow"
-	auto ConVar_args		= (char*)SomethingICantExplain + ConVar_strlen + 8;//" 1337 ura govno"
-	
-	//if (WhatIsThisBullshit(first_argument) == dec)
-	printf("\n%s %d ---> %s", ConVar->GetConVarName(), ConVar->GetCurrentValue__int32(), ConVar_args);
+		return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int32*)SomethingICantExplain);
+	}
+	auto ConVar_elements = *(__int32*)SomethingICantExplain; //dota_use_particle_fow 1337 ura govno == 4 elements
+	if (!ConVar_elements)
+		printf("\n[zero elements]");
+	else
+		printf("\n");
+	auto ConVar_strlen = *(__int32*)(SomethingICantExplain + 4);//strlen("dota_use_particle_fow")
 
 
-	return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int32*)orig);
+	auto ConVar_string = (SomethingICantExplain + 8); //"dota_use_particle_fow 1337 ura govno"
+	auto ConVar_command = ConVar_string;//"dota_use_particle_fow"
+	auto tempchar = *ConVar_string;
+	if (!ConVar_strlen && ((tempchar >= 65 && tempchar <= 90) || (tempchar >= 97 && tempchar <= 122)))
+		ConVar_strlen = strlen(ConVar_string);
+
+	auto ConVar_args = (char*)SomethingICantExplain + ConVar_strlen + 8;//" 1337 ura govno"
+
+	char temp[200];
+	memset(temp, 0, 200);
+	memcpy(temp, ConVar_string, ConVar_strlen);
+
+	if (ConVar_elements == 1)
+	{
+		printf("%s get read or executed", temp);
+		if (!*ConVar_args)
+			printf("\t(no args)");
+		else
+			printf("--> %s", ConVar_args);
+	}
+	else
+		//if (!ConVar_elements || !ConVar)
+		//	return ConVarMainProcessor_orig(CInputService,a2,a3,a4,a5,ConVar, (__int32*)SomethingICantExplain);
+		//else
+		//	printf("\n%s\t%s\t--->\t%s", ConVar->GetConVarName(), ConVar->GetCurrentValue_string(), ConVar_args);
+
+
+		//if (WhatIsThisBullshit(first_argument) == dec)
+		if (ConVar)
+			printf("%s %s ---> %s", temp, ConVar->GetCurrentValue_string(), ConVar_args);
+		else
+			printf("%s %s",temp, ConVar_args);
+
+
+	return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int32*)SomethingICantExplain);
 }
 #endif

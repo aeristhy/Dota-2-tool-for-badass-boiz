@@ -74,7 +74,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
             && !strstr(typeName, "C_DOTAWearableItem") && !strstr(typeName, "C_DOTASceneEntity") && !strstr(typeName, "CInfoTarget")
             && !strstr(typeName, "C_DOTA_Roshan") && !strstr(typeName, "CInfoWorldLayer") && !strstr(typeName, "C_DynamicProp")
             && !strstr(typeName, "C_TriggerBuoyancy") && !strstr(typeName, "C_DOTA_NeutralSpawner")
-            && !strstr(typeName, "CDOTA_Item_Ward_Dispenser") && !strstr(typeName, "CAdditionalWearable")
+            && !strstr(typeName, "CDOTA_Item_Ward_Dispenser") && !strstr(typeName, "CAdditionalWearable") && !strstr(typeName, "CDOTA_Item_")
 
 
             )
@@ -87,7 +87,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
             }
     }
 
-#endif
+#endif    
     return OnAddEntityRet(ecx, ptr, index);
 }
 
