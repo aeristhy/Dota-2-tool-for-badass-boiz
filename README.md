@@ -10,6 +10,17 @@ Black brick -- marked true hero
 ![til](Screenshot_16.png)
 ![til](Screenshot_2.png)  
 
-im totaly tired off playing with brainless agressive assholes and really DO NOT WANT ANY TO DEVELOP ANYTHING TO DOTA 2. 
-This community is hopeless. Develop it for free i will not evermore. Also im f/////ng noname so nobody will donate me to stimulate get to work.
-So this garbage is DOTA's heritage from me. Die in hell, dota2 toxic community. Hope, we will never see again and i never get back to work with it. Or say word like this. (oh god)
+Console Variable hack: allows you to change protected CVars
+example: __dota_use_particle_fow 0 force__
+will cause you to see enemy spells and teleports in Fog Of War
+however, dota engine will still think it is '1' and will show it
+dont belive it feature is not working. It will set value that checks
+so either hack working either your game crashed :D
+__for now working only for CVars that check int32 value and only with decimal arguments.__
+(number one means you can not see through fog of war. Do you see? So feature means you can now :P)
+![til](Screenshot_10.png) 
+
+
+__INSTRUCTION__! 
+hack variables after you joined server. As i understand, dota does not reset value after every match, but if dota see protected value changed, client will fix to.
+To avoid it, you should connect to match (NOT LOBBY THAT ALLOWS YOU TO CHEAT), and after that type sv_cheats 1 or dota_use_particle_fow 0 or whatever you want. This way checked and works fine.
