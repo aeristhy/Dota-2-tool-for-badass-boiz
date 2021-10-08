@@ -1,6 +1,7 @@
 #pragma once
 #include "CustomTypes.h"
 #include "CConVar.h"
+#include "CConCommandMemberAccessor.h"
 #include <iostream>
 
 /*
@@ -49,6 +50,7 @@ VarType WhatIsThisBullshit(char* bullshit)
 #ifdef _DEBUG
 void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, char* SomethingICantExplain)
 {
+	//CConCommandMemberAccessor<CMapListService>
 	if (!SomethingICantExplain)
 	{
 		auto ConVar_string = (SomethingICantExplain + 8);
@@ -77,15 +79,24 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 
 	char temp[200];
 	memset(temp, 0, 200);
-	memcpy(temp, ConVar_string, ConVar_strlen);
-
+	if (ConVar_strlen)
+		memcpy(temp, ConVar_string, ConVar_strlen);
+	else
+		strcat(temp, ConVar_args);
 	if (ConVar_elements == 1)
 	{
-		printf("%s get read or executed", temp);
-		if (!*ConVar_args)
-			printf("\t(no args)");
+		if (!ConVar)
+			printf("[no  ConVar]");
 		else
-			printf("--> %s", ConVar_args);
+		{
+			auto q = ConVar->GetConVarName();
+			if (*q)
+				printf("[ _unknown ]");
+			else
+				printf("[no name]");
+		}
+		printf("\t%s get read or executed", temp);
+
 	}
 	else
 		//if (!ConVar_elements || !ConVar)
@@ -96,7 +107,22 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 
 		//if (WhatIsThisBullshit(first_argument) == dec)
 		if (ConVar)
-			printf("%s %s ---> %s", temp, ConVar->GetCurrentValue_string(), ConVar_args);
+		{
+			
+			if (ConVar->isCConCommand())
+			{	
+				auto ConCommand = (CConCommand*)ConVar;
+				printf("[ConCommand]\t%s %s", temp, ConVar_args);
+			}
+			else
+			{
+				auto q = ConVar->GetCurrentValue_string();
+				if (!*q)
+					printf("[ConVar val]\t%s (no value) ---> %s", temp, ConVar_args);
+				else
+					printf("[ConVar val]\t%s %s ---> %s", temp,q, ConVar_args);
+			}
+		}
 		else
 			printf("%s %s",temp, ConVar_args);
 

@@ -15,6 +15,20 @@ public:
 	{
 		return *(char**)((char*)this + 0x48);
 	}
+	__inline int isCConCommand()
+	{
+		int priznaki = 0;
+		if (*(__int64*)((char*)this + 0x58) > 0x7FFF00000000)
+		{
+			priznaki++;
+			if (this->GetCurrentValue_float() == 0)
+				priznaki++;
+
+			if (*(__int64*)((char*)this + 0x48) > 0x7FFF00000000)
+				priznaki++;
+		}
+		return priznaki;
+	}
 	__inline __int32 GetCurrentValue__int32()
 	{
 		return *(__int32*)((char*)this + 0x58);
@@ -33,5 +47,10 @@ public:
 	__inline void SetValue(__int32 value) 
 	{
 		*(__int32*)((char*)this + 0x58) = value;
+	}
+
+	__inline char* GetSomeString()
+	{
+		return *(char**)((char*)this + 0xA8);
 	}
 };

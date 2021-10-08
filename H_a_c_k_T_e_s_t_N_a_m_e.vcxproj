@@ -169,6 +169,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CConCommandMemberAccessor.h" />
     <ClInclude Include="CConVar.h" />
     <ClInclude Include="CDOTA_Camera.h" />
     <ClInclude Include="CEntityInstance.h" />
