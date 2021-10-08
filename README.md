@@ -10,15 +10,15 @@ Black brick -- marked true hero
 ![til](Screenshot_16.png)
 ![til](Screenshot_2.png)  
 
-Console Variable hack: allows you to change protected CVars
-example: __dota_use_particle_fow 0 force__
-will cause you to see enemy spells and teleports in Fog Of War
-however, dota engine will still think it is '1' and will show it
-dont belive it feature is not working. It will set value that checks
-so either hack working either your game crashed :D
-__for now working only for CVars that check int32 value and only with decimal arguments.__
-(number one means you can not see through fog of war. Do you see? So feature means you can now :P)
-![til](Screenshot_10.png) 
+Console Variable hack: allows you to change protected CVars   
+example: __dota_use_particle_fow 0 force__  
+will cause you to see enemy spells and teleports in Fog Of War  
+however, dota engine will still think it is '1' and will show it  
+dont belive it feature is not working. It will set value that checks  
+so either hack working either your game crashed :D  
+__for now working only for CVars that check int32 value and only with decimal arguments.__  
+(number one means you can not see through fog of war. Do you see? So feature means you can now :P)  
+![til](Screenshot_10.png)  
 
 
 __INSTRUCTION__! 
