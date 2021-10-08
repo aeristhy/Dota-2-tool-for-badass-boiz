@@ -11,7 +11,7 @@ Address of signature = particles.dll + 0x0026B220
 
 __int64 __usercall (rdx char* new cvar value, rcx ConVar, xm0 double FigureOutWhat)
 */
-
+#ifdef _DEBUG
 __int64 __fastcall ConVarChangeCallback__particledll(char* value, CConVar* ConVar, double FigureOutWhat)
 {
 	switch (*value)
@@ -47,25 +47,30 @@ VarType WhatIsThisBullshit(char* bullshit)
 {
 	return wtf;
 }
-#ifdef _DEBUG
+#endif
+
+
 void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, char* SomethingICantExplain)
 {
 	//CConCommandMemberAccessor<CMapListService>
 	if (!SomethingICantExplain)
 	{
+#ifdef _DEBUG
 		auto ConVar_string = (SomethingICantExplain + 8);
 		if (ConVar_string)
 			printf("\n%s", ConVar_string);
 		else
 			printf("\n!SomethingICantExplain && no string (wtf?)");
-
+#endif
 		return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int32*)SomethingICantExplain);
 	}
 	auto ConVar_elements = *(__int32*)SomethingICantExplain; //dota_use_particle_fow 1337 ura govno == 4 elements
+#ifdef _DEBUG
 	if (!ConVar_elements)
 		printf("\n[zero elements]");
 	else
 		printf("\n");
+#endif
 	auto ConVar_strlen = *(__int32*)(SomethingICantExplain + 4);//strlen("dota_use_particle_fow")
 
 
@@ -85,6 +90,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 		strcat(temp, ConVar_args);
 	if (ConVar_elements == 1)
 	{
+#ifdef _DEBUG
 		if (!ConVar)
 			printf("[no  ConVar]");
 		else
@@ -96,7 +102,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 				printf("[no name]");
 		}
 		printf("\t%s get read or executed", temp);
-
+#endif
 	}
 	else
 		//if (!ConVar_elements || !ConVar)
@@ -112,21 +118,33 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 			if (ConVar->isCConCommand())
 			{	
 				auto ConCommand = (CConCommand*)ConVar;
+#ifdef _DEBUG
 				printf("[ConCommand]\t%s %s", temp, ConVar_args);
+#endif
 			}
 			else
 			{
+				auto command = strstr(ConVar_args, "force");		 //allows you to change protected CVars
+				if (command)										//example: dota_use_particle_fow 0 force
+				{													//will cause you to see enemy spells and teleports in Fog Of War
+					char w[8];										//however, dota engine will still think it is '1' and will show it
+					memset(w, 0, 8);								//dont belive it feature is not working. It will set value that checks
+					memcpy(w, ConVar_args, command - ConVar_args);	//so either hack working either your game crashed :D
+					ConVar->SetValue((int)std::strtol(w,0,10));		//for now working only for CVars that check __int32 value and only with decimal arguments. 
+				}
+#ifdef _DEBUG
 				auto q = ConVar->GetCurrentValue_string();
 				if (!*q)
 					printf("[ConVar val]\t%s (no value) ---> %s", temp, ConVar_args);
 				else
 					printf("[ConVar val]\t%s %s ---> %s", temp,q, ConVar_args);
+#endif
 			}
 		}
+#ifdef _DEBUG
 		else
 			printf("%s %s",temp, ConVar_args);
-
+#endif
 
 	return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int32*)SomethingICantExplain);
 }
-#endif

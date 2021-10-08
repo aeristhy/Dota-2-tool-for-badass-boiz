@@ -178,6 +178,7 @@ void Init()
     auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",           "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
     IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
     auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
+    auto WTGCvarProcessor_main      = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? 48 89 ?? ?? ?? 44 89 ?? ?? ?? 57 41");
 
 #ifdef _DEBUG
     CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
@@ -188,7 +189,6 @@ void Init()
     stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
     auto WTGCvarProcessor_particle  = PatternFinder::PatternScan((char*)"particles.dll",        "4C 8B ?? 53 57 48 81 EC");
     auto WTGCvarProcessor_client    = PatternFinder::PatternScan((char*)"client.dll",           "4C 8B ?? 53 57 48 81 EC ?? ?? ?? ?? 0F 29");
-    auto WTGCvarProcessor_main      = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? 48 89 ?? ?? ?? 44 89 ?? ?? ?? 57 41");
     
     
     //auto CInputService_StaticAddress PatternFinder::PatternScan((char*)"client.dll", "48 8B ?? ?? ?? ?? ?? 4C 8D ?? ?? 48 8D ?? ?? 48 8B ?? FF 90 ?? ?? ?? ?? 4C 8B");
@@ -332,9 +332,7 @@ Address of signature = client.dll + 0x01EDA100
     TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
     hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 14, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
     //(05.09.2021) 15 -> 14 (27.09.2021)
-#ifdef _DEBUG
     hk.set_hook((char*)WTGCvarProcessor_main, 15, (char*)ConVarMainProcessor, (char**)&ConVarMainProcessor_orig);
-#endif
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     
