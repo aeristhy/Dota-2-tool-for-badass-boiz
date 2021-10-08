@@ -22,5 +22,5 @@ __for now working only for CVars that check int32 value and only with decimal ar
 
 
 __INSTRUCTION__! 
-hack variables after you joined server. As i understand, dota does not reset value after every match, but if dota see protected value changed, client will fix to.
-To avoid it, you should connect to match (NOT LOBBY THAT ALLOWS YOU TO CHEAT), and after that type sv_cheats 1 or dota_use_particle_fow 0 or whatever you want. This way checked and works fine.
+hack variables after you joined server. As i understand, dota does not reset value after every match, but if dota see protected value changed, client will fix to.  
+To avoid it, you should connect to match (NOT LOBBY THAT ALLOWS YOU TO CHEAT), and after that type sv_cheats 1 or dota_use_particle_fow 0 or whatever you want.  This way checked and works fine.
