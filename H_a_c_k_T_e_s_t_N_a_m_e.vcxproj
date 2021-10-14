@@ -137,6 +137,9 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>/D __its64 /D DefHackName="$(ProjectName)" /D DefHackFileName="$(ProjectName).dll"</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -178,7 +181,9 @@
     <ClInclude Include="cl_particle_simulate.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="connector.h" />
+    <ClInclude Include="CRenderComponent.h" />
     <ClInclude Include="CVarChangeCallback.h" />
+    <ClInclude Include="C_DOTAPlayer.h" />
     <ClInclude Include="ESP.h" />
     <ClInclude Include="GlobalVars.h" />
     <ClInclude Include="CustomTypes.h" />

@@ -78,6 +78,8 @@ int		how_much_squares = 0;
 DWORD	quad_color = 0x000000FF;
 DWORD	quad_color2 = 0x00FFFF00;
 D3DVIEWPORT9 view;
+byte color[4];
+
 
 /*
 Hooks and it's stuff

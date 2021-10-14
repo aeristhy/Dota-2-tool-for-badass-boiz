@@ -12,7 +12,7 @@ Address of signature = particles.dll + 0x0026B220
 __int64 __usercall (rdx char* new cvar value, rcx ConVar, xm0 double FigureOutWhat)
 */
 #ifdef _DEBUG
-__int64 __fastcall ConVarChangeCallback__particledll(char* value, CConVar* ConVar, double FigureOutWhat)
+void __fastcall ConVarChangeCallback__particledll(char* value, CConVar* ConVar, double FigureOutWhat)
 {
 	switch (*value)
 	{
@@ -31,7 +31,7 @@ __int64 __fastcall ConVarChangeCallback__particledll(char* value, CConVar* ConVa
 
 	}
 	}
-	return 0; //Function is not finished. This is just announce or something like that. Just like "Yo dude look im doing nice?"
+	return; //Function is not finished. This is just announce or something like that. Just like "Yo dude look im doing nice?"
 }
 
 
@@ -52,7 +52,6 @@ VarType WhatIsThisBullshit(char* bullshit)
 
 void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, char* SomethingICantExplain)
 {
-	//CConCommandMemberAccessor<CMapListService>
 	if (!SomethingICantExplain)
 	{
 #ifdef _DEBUG
@@ -62,7 +61,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 		else
 			printf("\n!SomethingICantExplain && no string (wtf?)");
 #endif
-		return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int32*)SomethingICantExplain);
+		return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int64*)SomethingICantExplain);
 	}
 	auto ConVar_elements = *(__int32*)SomethingICantExplain; //dota_use_particle_fow 1337 ura govno == 4 elements
 #ifdef _DEBUG
@@ -79,7 +78,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 	auto tempchar = *ConVar_string;
 	if (!ConVar_strlen && ((tempchar >= 65 && tempchar <= 90) || (tempchar >= 97 && tempchar <= 122)))
 		ConVar_strlen = strlen(ConVar_string);
-
+	
 	auto ConVar_args = (char*)SomethingICantExplain + ConVar_strlen + 8;//" 1337 ura govno"
 
 	char temp[200];
@@ -105,32 +104,33 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 #endif
 	}
 	else
-		//if (!ConVar_elements || !ConVar)
-		//	return ConVarMainProcessor_orig(CInputService,a2,a3,a4,a5,ConVar, (__int32*)SomethingICantExplain);
-		//else
-		//	printf("\n%s\t%s\t--->\t%s", ConVar->GetConVarName(), ConVar->GetCurrentValue_string(), ConVar_args);
-
-
-		//if (WhatIsThisBullshit(first_argument) == dec)
+		if (!ConVar_elements || !ConVar)
+			return ConVarMainProcessor_orig(CInputService,a2,a3,a4,a5,ConVar, (__int64*)SomethingICantExplain);
+#ifdef _DEBUG
+		else
+		//printf("\n%s\t%s\t--->\t%s", ConVar->GetConVarName(), ConVar->GetCurrentValue_string(), ConVar_args);
+#endif
+//		//if (WhatIsThisBullshit(first_argument) == dec)
 		if (ConVar)
 		{
 			
 			if (ConVar->isCConCommand())
 			{	
-				auto ConCommand = (CConCommand*)ConVar;
 #ifdef _DEBUG
+				auto ConCommand = (CConCommand*)ConVar;
 				printf("[ConCommand]\t%s %s", temp, ConVar_args);
 #endif
 			}
 			else
 			{
 				auto command = strstr(ConVar_args, "force");		 //allows you to change protected CVars
-				if (command)										//example: dota_use_particle_fow 0 force
+				if (command && *(char*)(command + 5) == '\0')		//example: dota_use_particle_fow 0 force
 				{													//will cause you to see enemy spells and teleports in Fog Of War
 					char w[8];										//however, dota engine will still think it is '1' and will show it
 					memset(w, 0, 8);								//dont belive it feature is not working. It will set value that checks
 					memcpy(w, ConVar_args, command - ConVar_args);	//so either hack working either your game crashed :D
 					ConVar->SetValue((int)std::strtol(w,0,10));		//for now working only for CVars that check __int32 value and only with decimal arguments. 
+					ConColorMsg((__int64*)&color, "\n\nPssst~\nConVar value secretly changed.\nEnjoy~~\n\n");
 				}
 #ifdef _DEBUG
 				auto q = ConVar->GetCurrentValue_string();
@@ -146,5 +146,5 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 			printf("%s %s",temp, ConVar_args);
 #endif
 
-	return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int32*)SomethingICantExplain);
+	return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int64*)SomethingICantExplain);
 }

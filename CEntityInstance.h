@@ -2,6 +2,7 @@
 #include "vector.h"
 #include "Schema.h"
 #include "Color.h"
+#include "CRenderComponent.h"
 
 struct SchemaClassBinding {
 	SchemaClassBinding* parent; // I THINK
@@ -282,6 +283,10 @@ public:
 	{
 		return (NetworkVar_m_skeletonInstance*)*(__int64*)((char*)this + 0x310);
 	}
+	__inline CRenderComponent* GetRenderComponent()
+	{
+		return (CRenderComponent*)*(__int64*)((char*)this + 0x318);
+	}
 	__inline __int32 GetMaxHealth()
 	{
 		return *(__int32*)((char*)this + 0x328);
@@ -298,10 +303,11 @@ public:
 	{
 		return ((ParticleMgr*)((char*)this + 0x490));
 	}
-	__inline NektoA40* GetA40()
+	__inline __int32 GetEntityIndex()
 	{
-		return ((NektoA40*)((char*)this + 0xA40));
+		return *(__int32*)((char*)this + 0x630);
 	}
+
 	/*__inline bool IsLocalPlayer()
 	{
 		if (!*(__int32*)((char*)this + 0x0b48))

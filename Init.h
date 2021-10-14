@@ -170,6 +170,11 @@ void Init()
     AllocConsole();
     freopen("CONOUT$", "a+", stdout);
 #endif
+
+    color[0] = 0;
+    color[1] = 0xEA;
+    color[2] = 0xAE;
+    color[3] = 0xFF;
   
     auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 8B 01 48 8B 51 ?? 48 FF");
     auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
@@ -179,7 +184,7 @@ void Init()
     IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
     auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
     auto WTGCvarProcessor_main      = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? 48 89 ?? ?? ?? 44 89 ?? ?? ?? 57 41");
-
+    ConColorMsg                     = (t10)PatternFinder::PatternScan((char*)"tier0.dll",            "4C 8B ?? 49 89 ?? ?? 4D 89 ?? ?? 4D 89 ?? ?? 53 55");
 #ifdef _DEBUG
     CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
     DrawParticleOnEntity            = (t5)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
@@ -336,5 +341,5 @@ Address of signature = client.dll + 0x01EDA100
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     
-
+    ConColorMsg((__int64*)&color, "\n\n\n\n*****************we are in*****************\n\n\n\n");
 }

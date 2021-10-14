@@ -38,8 +38,8 @@ rsi == class of entity to draw around
 typedef __int64*(__fastcall* t6)(__int64* CParticleSystemMgrPtr, Nekto2C8 var,const char* particleName, char a4);
 typedef __int64*(__fastcall* t7)(char* str0, char* str1);//test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
 typedef char	(__fastcall* t8)(NetworkVar_m_skeletonInstance* HeroSkeleton, char* reserved, char* Coordinate);
-typedef void	(__fastcall* t9)(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, __int32* SomethingICantExplain);
-
+typedef void	(__fastcall* t9)(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, __int64* SomethingICantExplain);
+typedef void   (__fastcall* t10)(__int64* color, const char* format, ...);
 
 
 
@@ -58,3 +58,4 @@ t6		FindOrCreateParticleOrSomething = 0;
 t7		stricmp_valve		= 0; //test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
 t8		SelectableUnitCollidedWithCursor_Original = 0;
 t9		ConVarMainProcessor_orig = 0;
+t10		ConColorMsg			= 0;
