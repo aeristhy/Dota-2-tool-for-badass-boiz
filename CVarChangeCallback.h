@@ -123,14 +123,17 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 			}
 			else
 			{
-				auto command = strstr(ConVar_args, "force");		 //allows you to change protected CVars
-				if (command && *(char*)(command + 5) == '\0')		//example: dota_use_particle_fow 0 force
-				{													//will cause you to see enemy spells and teleports in Fog Of War
-					char w[8];										//however, dota engine will still think it is '1' and will show it
-					memset(w, 0, 8);								//dont belive it feature is not working. It will set value that checks
-					memcpy(w, ConVar_args, command - ConVar_args);	//so either hack working either your game crashed :D
-					ConVar->SetValue((int)std::strtol(w,0,10));		//for now working only for CVars that check __int32 value and only with decimal arguments. 
-					ConColorMsg((__int64*)&color, "\n\nPssst~\nConVar value secretly changed.\nEnjoy~~\n\n");
+				if (!strstr(temp, "bind") && !strstr(temp, "say") && !strstr(temp, "say_team"))
+				{
+					auto command = strstr(ConVar_args, "force");		 //allows you to change protected CVars
+					if (command && *(char*)(command + 5) == '\0')		//example: dota_use_particle_fow 0 force
+					{													//will cause you to see enemy spells and teleports in Fog Of War
+						char w[8];										//however, dota engine will still think it is '1' and will show it
+						memset(w, 0, 8);								//dont belive it feature is not working. It will set value that checks
+						memcpy(w, ConVar_args, command - ConVar_args);	//so either hack working either your game crashed :D
+						ConVar->SetValue((int)std::strtol(w, 0, 10));		//for now working only for CVars that check __int32 value and only with decimal arguments. 
+						ConColorMsg((__int64*)&color, "\n\nPssst~\nConVar value secretly changed.\nEnjoy~~\n\n");
+					}
 				}
 #ifdef _DEBUG
 				auto q = ConVar->GetCurrentValue_string();
