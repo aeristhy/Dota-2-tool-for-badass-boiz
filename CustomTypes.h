@@ -39,7 +39,7 @@ typedef __int64*(__fastcall* t6)(__int64* CParticleSystemMgrPtr, Nekto2C8 var,co
 typedef __int64*(__fastcall* t7)(char* str0, char* str1);//test required. Snezh, i'm serious. Test it in nanoseconds. Dont forget, suka
 typedef char	(__fastcall* t8)(NetworkVar_m_skeletonInstance* HeroSkeleton, char* reserved, char* Coordinate);
 typedef void	(__fastcall* t9)(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, __int64* SomethingICantExplain);
-typedef void   (__fastcall* t10)(__int64* color, const char* format, ...);
+typedef void   (__fastcall* t10)(byte* color, const char* format, ...);
 
 
 

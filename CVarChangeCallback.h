@@ -132,7 +132,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 						memset(w, 0, 8);								//dont belive it feature is not working. It will set value that checks
 						memcpy(w, ConVar_args, command - ConVar_args);	//so either hack working either your game crashed :D
 						ConVar->SetValue((int)std::strtol(w, 0, 10));		//for now working only for CVars that check __int32 value and only with decimal arguments. 
-						ConColorMsg((__int64*)&color, "\n\nPssst~\nConVar value secretly changed.\nEnjoy~~\n\n");
+						ConColorMsg(color, "\n\nPssst~\nConVar value secretly changed.\nEnjoy~~\n\n");
 					}
 				}
 #ifdef _DEBUG

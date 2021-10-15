@@ -13,6 +13,7 @@
 #include "PatternFinder.h"
 #include "SelectableUnitCollidedWithCursor.h"
 #include "CVarChangeCallback.h"
+#include "CDOTAInventoryManager.h"
 #pragma warning(disable : 4996)
 
 
@@ -175,6 +176,12 @@ void Init()
     color[1] = 0xEA;
     color[2] = 0xAE;
     color[3] = 0xFF;
+
+    char* xuinya = (char*)PatternFinder::PatternScan((char*)"client.dll", "45 33 ?? 0F 10 ?? ?? 66 48");
+    __int32 ptr = *(__int32*)(xuinya += 0x3A);
+    char* instr = ((char*)xuinya + 0x37);
+    CDOTAInventoryManager* CDOTAInventoryMgr = (CDOTAInventoryManager*)((instr + ptr) + 5);
+    CDOTAInventoryMgr->GetSomeSharedShit()->GetSomeUnnamedShit()->GetMoreUnnamedShit()->GetCDOTAGameAccountPlus()->MakeItWork();
   
     auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 8B 01 48 8B 51 ?? 48 FF");
     auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
@@ -195,6 +202,9 @@ void Init()
     auto WTGCvarProcessor_particle  = PatternFinder::PatternScan((char*)"particles.dll",        "4C 8B ?? 53 57 48 81 EC");
     auto WTGCvarProcessor_client    = PatternFinder::PatternScan((char*)"client.dll",           "4C 8B ?? 53 57 48 81 EC ?? ?? ?? ?? 0F 29");
     
+    //printf("\nCDOTAInventoryManager: %llx\nxuinya: %llx", CDOTAInventoryMgr,xuinya);
+        //00007FFCBFF4DE55 + 01C1D644 + 7 = 7FFCC1B6B4A0
+
     
     //auto CInputService_StaticAddress PatternFinder::PatternScan((char*)"client.dll", "48 8B ?? ?? ?? ?? ?? 4C 8D ?? ?? 48 8D ?? ?? 48 8B ?? FF 90 ?? ?? ?? ?? 4C 8B");
     //auto attach_hitloc = PatternFinder::PatternScan((char*)"client.dll", "F3 0F ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F2 0F ?? ?? ?? 4C 8D");
@@ -341,5 +351,5 @@ Address of signature = client.dll + 0x01EDA100
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     
-    ConColorMsg((__int64*)&color, "\n\n\n\n*****************we are in*****************\n\n\n\n");
+    ConColorMsg(color, "\n\n\n\n*****************we are in*****************\n\n\n\n");
 }
