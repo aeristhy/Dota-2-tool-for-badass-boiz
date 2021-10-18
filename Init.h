@@ -14,6 +14,7 @@
 #include "SelectableUnitCollidedWithCursor.h"
 #include "CVarChangeCallback.h"
 #include "CDOTAInventoryManager.h"
+#include "EnterScope.h"
 #pragma warning(disable : 4996)
 
 
@@ -27,7 +28,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
 
     bool alreadyExists = false;
     const char* typeName = ptr->Schema_DynamicBinding()->binaryName;
-    if (strstr(typeName, "DOTA_Unit_Hero"))
+    if (strstr(typeName, "DOTA_Unit_Hero") && !strstr(typeName,"C_DOTA_Unit_Hero_MonkeyKing"))
     {
 
         for (int meow = 0; meow < heroes_slots; meow++)
@@ -171,17 +172,17 @@ void Init()
     AllocConsole();
     freopen("CONOUT$", "a+", stdout);
 #endif
-
     color[0] = 0;
     color[1] = 0xEA;
     color[2] = 0xAE;
     color[3] = 0xFF;
-
     char* xuinya = (char*)PatternFinder::PatternScan((char*)"client.dll", "45 33 ?? 0F 10 ?? ?? 66 48");
-    __int32 ptr = *(__int32*)(xuinya += 0x3A);
-    char* instr = ((char*)xuinya + 0x37);
-    CDOTAInventoryManager* CDOTAInventoryMgr = (CDOTAInventoryManager*)((instr + ptr) + 5);
-    CDOTAInventoryMgr->GetSomeSharedShit()->GetSomeUnnamedShit()->GetMoreUnnamedShit()->GetCDOTAGameAccountPlus()->MakeItWork();
+    __int32 ptr = *(__int32*)(xuinya - 10);
+    char* instr = ((char*)xuinya - 13);
+    CDOTAInventoryManager* CDOTAInventoryMgr = (CDOTAInventoryManager*)((instr + ptr) + 7);
+    while (1)
+        if (CDOTAInventoryMgr->GetSomeSharedShit()->GetSomeUnnamedShit()->GetMoreUnnamedShit()->GetCDOTAGameAccountPlus()->MakeItWork())
+            break;
   
     auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 8B 01 48 8B 51 ?? 48 FF");
     auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
@@ -191,8 +192,10 @@ void Init()
     IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
     auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
     auto WTGCvarProcessor_main      = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? 48 89 ?? ?? ?? 44 89 ?? ?? ?? 57 41");
-    ConColorMsg                     = (t10)PatternFinder::PatternScan((char*)"tier0.dll",            "4C 8B ?? 49 89 ?? ?? 4D 89 ?? ?? 4D 89 ?? ?? 53 55");
+    ConColorMsg                     = (t10)PatternFinder::PatternScan((char*)"tier0.dll",       "4C 8B ?? 49 89 ?? ?? 4D 89 ?? ?? 4D 89 ?? ?? 53 55");
 #ifdef _DEBUG
+    auto WTGEnterScope = (t11)PatternFinder::PatternScan((char*)"tier0.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 56 41 ?? 41 ?? 48 83 EC ?? 4D 8B");
+
     CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
     DrawParticleOnEntity            = (t5)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
     FindOrCreateParticleOrSomething = (t6)PatternFinder::PatternScan((char*)"particles.dll",    "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
@@ -348,6 +351,7 @@ Address of signature = client.dll + 0x01EDA100
     hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 14, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
     //(05.09.2021) 15 -> 14 (27.09.2021)
     hk.set_hook((char*)WTGCvarProcessor_main, 15, (char*)ConVarMainProcessor, (char**)&ConVarMainProcessor_orig);
+    hk.set_hook((char*)WTGEnterScope, 15, (char*)&EnterScope, (char**)&EnterScope_orig);
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     

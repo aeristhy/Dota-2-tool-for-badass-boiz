@@ -54,7 +54,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 {
 	if (!SomethingICantExplain)
 	{
-#ifdef _DEBUG
+#ifdef _ConVarLog
 		auto ConVar_string = (SomethingICantExplain + 8);
 		if (ConVar_string)
 			printf("\n%s", ConVar_string);
@@ -64,7 +64,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 		return ConVarMainProcessor_orig(CInputService, a2, a3, a4, a5, ConVar, (__int64*)SomethingICantExplain);
 	}
 	auto ConVar_elements = *(__int32*)SomethingICantExplain; //dota_use_particle_fow 1337 ura govno == 4 elements
-#ifdef _DEBUG
+#ifdef _ConVarLog
 	if (!ConVar_elements)
 		printf("\n[zero elements]");
 	else
@@ -89,7 +89,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 		strcat(temp, ConVar_args);
 	if (ConVar_elements == 1)
 	{
-#ifdef _DEBUG
+#ifdef _ConVarLog
 		if (!ConVar)
 			printf("[no  ConVar]");
 		else
@@ -106,7 +106,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 	else
 		if (!ConVar_elements || !ConVar)
 			return ConVarMainProcessor_orig(CInputService,a2,a3,a4,a5,ConVar, (__int64*)SomethingICantExplain);
-#ifdef _DEBUG
+#ifdef _ConVarLog
 		else
 		//printf("\n%s\t%s\t--->\t%s", ConVar->GetConVarName(), ConVar->GetCurrentValue_string(), ConVar_args);
 #endif
@@ -116,7 +116,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 			
 			if (ConVar->isCConCommand())
 			{	
-#ifdef _DEBUG
+#ifdef _ConVarLog
 				auto ConCommand = (CConCommand*)ConVar;
 				printf("[ConCommand]\t%s %s", temp, ConVar_args);
 #endif
@@ -135,7 +135,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 						ConColorMsg(color, "\n\nPssst~\nConVar value secretly changed.\nEnjoy~~\n\n");
 					}
 				}
-#ifdef _DEBUG
+#ifdef _ConVarLog
 				auto q = ConVar->GetCurrentValue_string();
 				if (!*q)
 					printf("[ConVar val]\t%s (no value) ---> %s", temp, ConVar_args);
@@ -144,7 +144,7 @@ void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a
 #endif
 			}
 		}
-#ifdef _DEBUG
+#ifdef _ConVarLog
 		else
 			printf("%s %s",temp, ConVar_args);
 #endif

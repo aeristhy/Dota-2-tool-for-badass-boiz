@@ -162,6 +162,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName />
+      <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,6 +186,7 @@
     <ClInclude Include="CRenderComponent.h" />
     <ClInclude Include="CVarChangeCallback.h" />
     <ClInclude Include="C_DOTAPlayer.h" />
+    <ClInclude Include="EnterScope.h" />
     <ClInclude Include="ESP.h" />
     <ClInclude Include="GlobalVars.h" />
     <ClInclude Include="CustomTypes.h" />

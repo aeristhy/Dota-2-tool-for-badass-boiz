@@ -13,6 +13,7 @@ typedef void	(__thiscall* t2)(CGameEntitySystem* ecx, CBaseEntity* ptr, __int32 
 typedef __int32	(__thiscall* t3)(__int64*		ecx);								//CastRange, mother of god...........
 typedef bool	(__thiscall* t4)(CBaseEntity*	ecx, DOTATeam_t team);				//IsVisibleByTeam
 typedef void	(__fastcall* t5)(ParticleMgr* ecx, const char* particleName, cint _1, cint64 _0, cint64 _0_2,float* zero, cint64 _0_3);
+typedef void   (__thiscall* t11)(__int64*, const char*, int, const char*, bool, int);
 /*
 error at 7FFFD22687AF
 Code below. Rax == (__int64)-1
@@ -59,3 +60,4 @@ t7		stricmp_valve		= 0; //test required. Snezh, i'm serious. Test it in nanoseco
 t8		SelectableUnitCollidedWithCursor_Original = 0;
 t9		ConVarMainProcessor_orig = 0;
 t10		ConColorMsg			= 0;
+t11		EnterScope_orig		= 0;
