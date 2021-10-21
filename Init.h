@@ -23,6 +23,8 @@
 
 void SetRenderingEnabled(void*, bool);
 
+//void QuerySignatureFind
+
 void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
 {
 
@@ -184,6 +186,7 @@ void Init()
         if (CDOTAInventoryMgr->GetSomeSharedShit()->GetSomeUnnamedShit()->GetMoreUnnamedShit()->GetCDOTAGameAccountPlus()->MakeItWork())
             break;
   
+    PatternFinder::PatternScan((char*)"client.dll", "13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 ");
     auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 8B 01 48 8B 51 ?? 48 FF");
     auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
     auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",           "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");

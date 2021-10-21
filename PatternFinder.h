@@ -11,11 +11,14 @@ auto GetModuleSize(const char* m)
 	MODULEENTRY32 xModule;
 	hSnap = CreateToolhelp32Snapshot(8, processID);
 	xModule.dwSize = sizeof(MODULEENTRY32);
+	WCHAR wcharname[256];
+	memset(wcharname, 0, 512);
+	OemToCharW((LPSTR)m,wcharname);
 	if (Module32First(hSnap, &xModule))
 	{
 		while (Module32Next(hSnap, &xModule))
 		{
-			if (!strncmp((char*)xModule.szModule, m, 8))
+			if (!lstrcmpW(xModule.szModule, wcharname))
 			{
 				CloseHandle(hSnap);
 				return (DWORD)xModule.modBaseSize;
@@ -124,8 +127,8 @@ namespace PatternFinder
 
 		auto s = patternBytes.size();
 		auto d = patternBytes.data();
-
-		for (auto i = 0ul; i < sizeOfImage - s; ++i)
+		auto var = sizeOfImage - s;
+		for (auto i = 0ll; i < var; ++i)
 		{
 			bool found = true;
 			for (auto j = 0ul; j < s; ++j)
