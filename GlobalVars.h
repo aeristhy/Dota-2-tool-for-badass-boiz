@@ -3,6 +3,7 @@
 #include "CEntityInstance.h"
 #include "CGameEntitySystem.h"
 #include "vector.h"
+#include "CDOTAInventoryManager.h"
 
 struct vec2 {
 	int x;
@@ -51,6 +52,9 @@ bool draw_square_at_3d_coords = 0;
 bool disableinput = 0;
 bool draw3dbox = 0;
 bool UnderCursor = 0;
+#ifdef _DEBUG
+CDOTAInventoryManager* CDOTAInventoryMgr;
+#endif 
 
 /*
 Entity

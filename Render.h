@@ -180,6 +180,11 @@ TODO:
 	ImGui::SameLine();
 	ImGui::Checkbox("##undercursor", &UnderCursor);
 #ifdef _DEBUG
+	if (ImGui::Button("Force enable dota+"))
+		CDOTAInventoryMgr->GetSomeSharedShit()->GetSomeUnnamedShit()->GetMoreUnnamedShit()->GetCDOTAGameAccountPlus()->MakeItWork();
+	if (ImGui::Button("Force disable dota+"))
+		CDOTAInventoryMgr->GetSomeSharedShit()->GetSomeUnnamedShit()->GetMoreUnnamedShit()->GetCDOTAGameAccountPlus()->Disable();
+
 	ImGui::Text("Draw 3D box");
 	ImGui::SameLine();
 	ImGui::Checkbox("##d3dbox",&draw3dbox);

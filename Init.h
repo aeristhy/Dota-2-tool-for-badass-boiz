@@ -30,7 +30,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
 
     bool alreadyExists = false;
     const char* typeName = ptr->Schema_DynamicBinding()->binaryName;
-    if (strstr(typeName, "DOTA_Unit_Hero") && !strstr(typeName,"C_DOTA_Unit_Hero_MonkeyKing"))
+    if (strstr(typeName, "DOTA_Unit_Hero"))
     {
 
         for (int meow = 0; meow < heroes_slots; meow++)
@@ -158,6 +158,30 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
     return OnRemoveEntityRet(ecx, ptr, index);
 }
 
+__int64 GetAddressFromInstruction(__int64 instruction,char offset,char len, int extra_offset = 0)
+/*example: 7FF965D651E2  movzx r14d,word ptr [7FF968B606D8]
+                               44 0F B7 35    |EE B4 DF 02| (it's i32 value == 02 DF B4 EE)
+                                              """""""""""""\---> this part is relative address
+                                                                i should calculate instruction addres + this part
+                                                                instruction_address = a
+                                                                relative_address_part_offset = a + 4
+                                                                relative_address    = c
+                                                                absolute_address = *(__int32*)relative_address_part_offset + instruction_address + instruction_size
+so 
+instruction_address = (__int64)7FF965D651E2
+relative address    = (__int32)02DFB4EE
+target address      = (__int64)7FF968B606D8
+7FF965D651E2 + 02DFB4EE + 8 =  7FF968B606D8
+*/
+
+{
+    auto meow = instruction;
+    if (extra_offset != 0)
+        meow += extra_offset;
+
+    auto relative_address = *(__int32*)(meow + offset);
+    return meow + relative_address + len;
+}
 void Init()
 { 
     bool res = false;
@@ -179,14 +203,21 @@ void Init()
     color[2] = 0xAE;
     color[3] = 0xFF;
     char* xuinya = (char*)PatternFinder::PatternScan((char*)"client.dll", "45 33 ?? 0F 10 ?? ?? 66 48");
-    __int32 ptr = *(__int32*)(xuinya - 10);
+
+    /*__int32 ptr = *(__int32*)(xuinya - 10);
     char* instr = ((char*)xuinya - 13);
-    CDOTAInventoryManager* CDOTAInventoryMgr = (CDOTAInventoryManager*)((instr + ptr) + 7);
+    */
+#ifndef _DEBUG
+    CDOTAInventoryManager* CDOTAInventoryMgr = (CDOTAInventoryManager*)GetAddressFromInstruction((__int64)xuinya, 3, 7, -13);
+
     while (1)
         if (CDOTAInventoryMgr->GetSomeSharedShit()->GetSomeUnnamedShit()->GetMoreUnnamedShit()->GetCDOTAGameAccountPlus()->MakeItWork())
             break;
-  
-    PatternFinder::PatternScan((char*)"client.dll", "13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 ");
+#else
+    CDOTAInventoryMgr = (CDOTAInventoryManager*)GetAddressFromInstruction((__int64)xuinya, 3, 7, -13);
+#endif
+
+    PatternFinder::PatternScan((char*)"client.dll", "13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 ");//crash test
     auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 8B 01 48 8B 51 ?? 48 FF");
     auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
     auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",           "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
@@ -207,6 +238,7 @@ void Init()
     stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
     auto WTGCvarProcessor_particle  = PatternFinder::PatternScan((char*)"particles.dll",        "4C 8B ?? 53 57 48 81 EC");
     auto WTGCvarProcessor_client    = PatternFinder::PatternScan((char*)"client.dll",           "4C 8B ?? 53 57 48 81 EC ?? ?? ?? ?? 0F 29");
+    auto LocalPLayerOrSomething = PatternFinder::PatternScan((char*)"client.dll",               "44 0F ?? ?? ?? ?? ?? ?? 41 BC ?? ?? ?? ?? 66 45 ?? ?? 0F 84 ?? ?? ?? ?? 4C 89");
     
     //printf("\nCDOTAInventoryManager: %llx\nxuinya: %llx", CDOTAInventoryMgr,xuinya);
         //00007FFCBFF4DE55 + 01C1D644 + 7 = 7FFCC1B6B4A0
@@ -342,6 +374,11 @@ Address of signature = client.dll + 0x01EDA100
         printf("\nERROR: WTGCvarProcessor_main sig not found");
     else
         printf("\nWTGCvarProcessor_main: \t%llx", WTGCvarProcessor_main);
+    if (LocalPLayerOrSomething == nullptr)///////////////////////
+        printf("\nERROR: LocalPLayerOrSomething sig not found");
+    else
+        printf("\nLocalPLayerOrSomething: \t%llx", LocalPLayerOrSomething);
+    
 #endif
     
 

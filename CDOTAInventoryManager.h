@@ -12,6 +12,15 @@ public:
 		}
 		return false;
 	}
+	__inline bool Disable()
+	{
+		if (this)
+		{
+			*(__int64*)((char*)this + 0x2c) = 0;
+			return true;
+		}
+		return false;
+	}
 };
 
 class MoreUnnamedShit
