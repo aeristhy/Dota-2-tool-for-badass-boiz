@@ -40,6 +40,17 @@ public:
 	//Different ConVars uses different types of value. 
 	//That means bools like cl_particle_log_creates can be switched by SetValue(1 or 0)
 	//But r_particle_timescale uses float value and SetValue(10) will not affect this CVar, but SetValue(10.0) will do
+	__inline void SetValue(char* value)
+	{
+		char* q;
+		auto w = strlen(value);
+		for (char i = 0; i < w; i++)
+		{
+			q = *(char**)((char*)this + 0x48);
+			q[i] = value[i];
+		}
+		q[w + 1] = 0;
+	}
 	__inline void SetValue(float value)
 	{
 		*(float*)((char*)this + 0x54) = value;
@@ -48,7 +59,6 @@ public:
 	{
 		*(__int32*)((char*)this + 0x58) = value;
 	}
-
 	__inline char* GetSomeString()
 	{
 		return *(char**)((char*)this + 0xA8);

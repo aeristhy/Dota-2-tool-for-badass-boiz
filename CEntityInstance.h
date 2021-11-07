@@ -94,8 +94,8 @@ class Modifier {
 public:
 	__inline char* Name()
 	{
-		__int64* qq = (__int64*)(((char*)this) + 0x10);
-		char* str = *(char**)qq;
+		__int64* qq = (__int64*)(((char*)this) + 0x28);//0x10 -> 0x28
+		char* str = *(char**)qq;						//i did not noticed date then offset changed. Fixed 07.11.2021 23:09. :>
 		return str;
 	}
 	__inline DOTATeam_t GetTeamOwner()

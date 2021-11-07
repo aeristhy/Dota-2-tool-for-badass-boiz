@@ -49,6 +49,12 @@ VarType WhatIsThisBullshit(char* bullshit)
 }
 #endif
 
+#ifdef _DEBUG
+//#define _ConVarLog
+#endif
+
+//dota_item_autocast item_slot_index 1 -- cast on yourself
+//dota_item_execute item_slot_index -- execute two times causes cast on yourself. One execute causes select cursor mode
 
 void __fastcall ConVarMainProcessor(__int64 CInputService, int a2, int a3, int a4, unsigned int a5, CConVar* ConVar, char* SomethingICantExplain)
 {

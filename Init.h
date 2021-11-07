@@ -24,15 +24,24 @@
 void SetRenderingEnabled(void*, bool);
 
 //void QuerySignatureFind
-
+bool fkenMonkey = 0;
 void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
 {
-
+    bool monkey2 = false;
     bool alreadyExists = false;
     const char* typeName = ptr->Schema_DynamicBinding()->binaryName;
+
+    
     if (strstr(typeName, "DOTA_Unit_Hero"))
     {
-
+        if (!strcmp(typeName, "C_DOTA_Unit_Hero_MonkeyKing"))
+        {
+            monkey2 = true;
+            if (fkenMonkey)
+                return OnAddEntityRet(ecx, ptr, index);
+            //else
+                //fkenMonkey = 1;
+        }
         for (int meow = 0; meow < heroes_slots; meow++)
         {
             if (!heroes[meow])
@@ -53,7 +62,16 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
             {
                 if (heroes[meow])
                     continue;
-                heroes[meow] = ptr;
+                if (monkey2)
+                {
+                    if (!fkenMonkey)
+                    {
+                        heroes[meow] = (CBaseEntity*)1;
+                        fkenMonkey = 1;
+                    }
+                }
+                else
+                    heroes[meow] = ptr;
 #ifdef _DEBUG
                 printf("\n[%d]%s \t%llx || i:%X", meow, typeName, ptr, index);
 #endif
@@ -138,7 +156,7 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
 #endif
     bool IsNoHeroes = 1;
     for (char i = 0; i < heroes_slots; i++)
-        if (heroes[i])
+        if ((int)heroes[i] > 1)
         {
             IsNoHeroes = 0;
             break;
@@ -149,6 +167,7 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
         LocalPlayerID = 0;
         for (char i = 0; i < heroes_slots; i++)
             LastModifiersCount[i][0] = 0;
+        fkenMonkey = 0;
 //#ifdef _DEBUG
 //        for (char i = 0; i < heroes_slots; i++)
 //            for (char q = 0; q < Modifiers_Cap; q++)
@@ -391,7 +410,9 @@ Address of signature = client.dll + 0x01EDA100
     hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 14, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
     //(05.09.2021) 15 -> 14 (27.09.2021)
     hk.set_hook((char*)WTGCvarProcessor_main, 15, (char*)ConVarMainProcessor, (char**)&ConVarMainProcessor_orig);
+#ifdef _DEBUG
     hk.set_hook((char*)WTGEnterScope, 15, (char*)&EnterScope, (char**)&EnterScope_orig);
+#endif
     ProcessOldWndProc = hk.set_WndProc_hook(ProcessWindowHandle, (__int64)WndProc);
 
     

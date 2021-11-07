@@ -86,7 +86,7 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 	{
 		for (char i = 0; i < 5; i++)
 		{
-			if (heroes[i])
+			if ((int)heroes[i] > 1)
 				if (IsVisibleByTeam(heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT)))
 				//if(heroes[i]->IsLocalPlayer())
 				{
@@ -106,12 +106,15 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 
 		
 		for (char i = 0; i < heroes_slots; i++)
-			if (heroes[i])
+			if ((int)heroes[i] > 1)
 			{	
 				auto hero	  = heroes[i];
 				auto heroName = hero->Schema_DynamicBinding()->binaryName + 17;
 				auto heroTeam = hero->GetTeam();
 				auto heroVec3 = hero->GetSleleton()->GetPos();
+
+
+
 				auto heroIsVisible = IsVisibleByTeam(hero, (heroTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT));
 
 				vec2 screen;
@@ -311,7 +314,7 @@ void debugWindow()
 {
 #ifdef _DEBUG
 	for (char i = 0; i < heroes_slots; i++)
-		if (heroes[i])
+		if ((int)heroes[i] > 1)
 		{
 			auto heroName = heroes[i]->Schema_DynamicBinding()->binaryName + 17;
 			auto heroTeam = heroes[i]->GetTeam();
