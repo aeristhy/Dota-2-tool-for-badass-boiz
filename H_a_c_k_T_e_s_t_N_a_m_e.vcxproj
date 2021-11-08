@@ -159,10 +159,11 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>/D __its64 /D DefHackName="$(ProjectName)" /D DefHackFileName="$(ProjectName).dll"</AdditionalOptions>
       <LanguageStandard>stdcpp14</LanguageStandard>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ProgramDataBaseFileName />
       <UseFullPaths>true</UseFullPaths>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

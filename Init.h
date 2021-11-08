@@ -156,7 +156,7 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
 #endif
     bool IsNoHeroes = 1;
     for (char i = 0; i < heroes_slots; i++)
-        if ((int)heroes[i] > 1)
+        if ((__int64)heroes[i] > (__int64)1)
         {
             IsNoHeroes = 0;
             break;
