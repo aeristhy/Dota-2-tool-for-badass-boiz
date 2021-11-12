@@ -153,9 +153,49 @@ TODO:
 		ImGui::End();
 	}
 //#endif
-
-	ImGui::Begin("Lick the dick :p");                      
+	auto q = GameEntitySystem->GetPlayerPool();
+	if (q->GetPlayerByPlayerIndex(-1))
+		ImGui::Begin("(tv or local lobby)");
+	else
+		ImGui::Begin("Lick the dick :p");                      
 	{
+		char label[50];
+		memset(label, 0, 50);
+		
+		if (!LocalPlayer)
+		{
+			ImGui::Text("Select your hero pls");
+			for (int i = 0; i < q->GetPlayerHighestIndex(); i++)
+			{
+				CBaseEntity* ent = 0;
+				auto entIndex = q->GetPlayerByPlayerIndex(i)->GetHeroEntityIndex();
+				int w = 0;
+				for (int i = 0; i < heroes_slots; i++)
+					if (heroes_index[i] == entIndex)
+					{
+						ent = heroes[i];
+						w = i;
+						break;
+					}
+				if (ent)
+				{
+					auto MyTeam = ent->GetTeam();
+					sprintf(label, "[%s]%s", TeamName(MyTeam), ent->GetNpcInfo()->GetNpcName());
+					if (ImGui::Button(label))
+					{
+						LocalPlayer = ent;
+						LocalPlayerID = w;
+						localPlayerTeam = MyTeam;
+						EnemyTeam = (ent->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT);
+						break;
+					}
+				}
+
+			}
+		}
+		else
+		if (ImGui::Button("Reset selected hero"))
+			LocalPlayer = 0;
 #ifdef _DEBUG
 		if (ImGui::Button("unload"))
 		{

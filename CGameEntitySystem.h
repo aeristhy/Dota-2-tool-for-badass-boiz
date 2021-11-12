@@ -1,31 +1,32 @@
 #pragma once
 
 #include "CEntityInstance.h"
-
+#include "C_DOTAPlayer.h"
 #define EntityHandle unsigned int
+
+class PlayerPoolManipulator
+{
+public:
+	__inline int GetPlayerHighestIndex()
+	{
+		for (int i = 2; i < 100; i++)
+		{
+			auto player = *(C_DOTAPlayer**)((char*)this + (0x78 * i));
+			if (!player)
+				return i -2;
+		}
+	}
+
+	__inline C_DOTAPlayer* GetPlayerByPlayerIndex(int i)
+	{
+		return *(C_DOTAPlayer**)((char*)this + (0x78 * (i + 2)));
+	}
+};
 
 class CGameEntitySystem {
 public:
-	virtual void n_0();
-	virtual void BuildResourceManifest(); // 01
-	virtual void n_2();
-	virtual void n_3();
-	virtual void n_4();
-	virtual void n_5();
-	virtual void n_6();
-	virtual void AddRefKeyValues(); // 7
-	virtual void ReleaseKeyValues(); // 8
-	virtual void n_9();
-	virtual void n_10();
-	virtual void ClearEntityDatabase(); // 11
-	virtual CBaseEntity FindEntityProcedural();
-	virtual CBaseEntity OnEntityParentChanged(); //13
-	virtual CBaseEntity OnAddEntity(CGameEntitySystem*, CBaseEntity, EntityHandle); // 14
-	virtual CBaseEntity OnRemoveEntity(CGameEntitySystem*, CBaseEntity, EntityHandle); // 15
-	virtual void n_16();
-	virtual void SortEntities(); // 17
-	virtual void n_18();
-	virtual void n_19();
-	virtual void n_20();
-	virtual void n_21();
+	__inline PlayerPoolManipulator* GetPlayerPool()
+	{
+		return *(PlayerPoolManipulator**)((char*)this + 0x10);
+	}
 };

@@ -22,7 +22,7 @@ LPDIRECT3DDEVICE9 pDevice_ = 0;
 DWORD	trashbox = 0;
 
 #define TeamSize		5
-#define heroes_slots	10
+#define heroes_slots	100
 
 #ifdef _DEBUG
 #define xlam_slots		400
@@ -59,6 +59,8 @@ CDOTAInventoryManager* CDOTAInventoryMgr;
 /*
 Entity
 */
+CGameEntitySystem* GameEntitySystem = 0;
+int				heroes_index[heroes_slots];
 CBaseEntity*	heroes[heroes_slots];
 CBaseEntity*	LocalPlayer = 0;
 char			LocalPlayerID = 0;

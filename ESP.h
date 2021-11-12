@@ -84,31 +84,44 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 	
 	if (!LocalPlayer)
 	{
-		for (char i = 0; i < 5; i++)
-		{
-			if ((__int64)heroes[i] > (__int64)1)
-				if (IsVisibleByTeam(heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT)))
-				//if(heroes[i]->IsLocalPlayer())
-				{
-					LocalPlayer = heroes[i];
-					LocalPlayerID = i;
-					localPlayerTeam = LocalPlayer->GetTeam();
-					EnemyTeam = localPlayerTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT;
-					break;
-				}
+		Sleep(0);
+		//for (char i = 0; i < 5; i++)
+		//{
+		//	if ((__int64)heroes[i] > (__int64)1)
+		//		if (IsVisibleByTeam(heroes[i], (heroes[i]->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT)))
+		//		//if(heroes[i]->IsLocalPlayer())
+		//		{
+		//			LocalPlayer = heroes[i];
+		//			LocalPlayerID = i;
+		//			localPlayerTeam = LocalPlayer->GetTeam();
+		//			EnemyTeam = localPlayerTeam == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT;
+		//			break;
+		//		}
 
-		}
+		//}
 	}
 	else
 	{
 		if (DrawHealthPanel)
 			ImGui::Begin("HealthPanel");
 
+		auto q = GameEntitySystem->GetPlayerPool();
 		
-		for (char i = 0; i < heroes_slots; i++)
-			if ((__int64)heroes[i] > (__int64)1)
-			{	
-				auto hero	  = heroes[i];
+		for (int i = 0; i < q->GetPlayerHighestIndex(); i++)
+		{
+			auto p = q->GetPlayerByPlayerIndex(i);
+			auto entIndex = p->GetHeroEntityIndex();
+
+			CBaseEntity* ent = 0;
+			for (int i = 0; i < heroes_slots; i++)
+				if (heroes_index[i] == entIndex)
+				{
+					ent = heroes[i];
+					break;
+				}
+			if (ent)
+			{
+				auto hero = ent;
 				auto heroName = hero->Schema_DynamicBinding()->binaryName + 17;
 				auto heroTeam = hero->GetTeam(); //do not compile with optimization enabled. This func fucks up all things
 				auto heroVec3 = hero->GetSleleton()->GetPos();
@@ -130,7 +143,7 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				rect.right = screen.x + 500;
 				rect.bottom = screen.y + 50;
 
-				
+
 				if (heroTeam != EnemyTeam)
 				{
 					int c = hero->GetModifiersCount();
@@ -188,12 +201,12 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 									}
 								}
 							}
-							
+
 						}
 						//rect.top += 50;
 						//rect.bottom += 50;
 						//font->DrawTextA(0, CDString, strlen(CDString), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));
-						
+
 					}
 #endif
 					if (DrawHealthPanel)
@@ -211,21 +224,22 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 						{
 							color.y = 0.0;
 							color.z = 1.0;
-							
+
 						}
 						if (currentHealth <= 500)
 						{
 							color.y = 1.0;
 							color.z = 0.0;
 						}
-						ImGui::TextColored(color,"%s\t%d/%d", HeroName, currentHealth, hero->GetMaxHealth());
+						ImGui::TextColored(color, "%s\t%d/%d", HeroName, currentHealth, hero->GetMaxHealth());
 					}
 					if (TrueHero)
-						DrawFilledRect11(screen.x, screen.y-10, 50, 10, 0xFF000000, pDevice);
+						DrawFilledRect11(screen.x, screen.y - 10, 50, 10, 0xFF000000, pDevice);
 				}
 			}
-		if (DrawHealthPanel)
-			ImGui::End();
+		}
+			if (DrawHealthPanel)
+				ImGui::End();
 		
 	}
 #ifdef _DEBUG

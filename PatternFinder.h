@@ -93,7 +93,7 @@ namespace PatternFinder
 		 * @returns Address of the first occurence
 		 * Thanks MarkHC
 		 */
-	std::uint8_t* PatternScan(char* module, const char* signature)
+	std::uint8_t* PatternScan(const char* module, const char* signature)
 	{
 		static auto pattern_to_byte = [](const char* pattern) {
 			auto bytes = std::vector<int>{};

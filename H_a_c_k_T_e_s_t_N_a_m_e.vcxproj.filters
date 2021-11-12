@@ -99,6 +99,9 @@
     <ClInclude Include="EnterScope.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="offsets.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

@@ -34,14 +34,7 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
     
     if (strstr(typeName, "DOTA_Unit_Hero"))
     {
-        if (!strcmp(typeName, "C_DOTA_Unit_Hero_MonkeyKing"))
-        {
-            monkey2 = true;
-            if (fkenMonkey)
-                return OnAddEntityRet(ecx, ptr, index);
-            //else
-                //fkenMonkey = 1;
-        }
+        
         for (int meow = 0; meow < heroes_slots; meow++)
         {
             if (!heroes[meow])
@@ -62,16 +55,9 @@ void OnAddEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index)
             {
                 if (heroes[meow])
                     continue;
-                if (monkey2)
-                {
-                    if (!fkenMonkey)
-                    {
-                        heroes[meow] = (CBaseEntity*)1;
-                        fkenMonkey = 1;
-                    }
-                }
-                else
-                    heroes[meow] = ptr;
+                
+                heroes[meow] = ptr;
+                heroes_index[meow] = index;
 #ifdef _DEBUG
                 printf("\n[%d]%s \t%llx || i:%X", meow, typeName, ptr, index);
 #endif
@@ -126,6 +112,7 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
             if (heroes[meow] == ptr)
             {
                 heroes[meow] = 0;
+                heroes_index[meow] = 0;
 #ifdef _DEBUG
                 for (char i = 0; i < Modifiers_Cap; i++)
                     Modifiers[meow][i] = 0;
@@ -217,6 +204,16 @@ void Init()
     AllocConsole();
     freopen("CONOUT$", "a+", stdout);
 #endif
+    /*
+    
+    void (Class_Name::* FuncPointer)() = &Class_Name::Func_Name;
+
+FuncPointer укажет на метод класса.
+    
+    */
+    
+    //printf("\n\n\n%llx\n\n\n", zalupka.GetHeroIndex);
+
     color[0] = 0;
     color[1] = 0xEA;
     color[2] = 0xAE;
@@ -236,28 +233,49 @@ void Init()
     CDOTAInventoryMgr = (CDOTAInventoryManager*)GetAddressFromInstruction((__int64)xuinya, 3, 7, -13);
 #endif
 
-    PatternFinder::PatternScan((char*)"client.dll", "13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 ");//crash test
-    auto InBattleCameraFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 8B 01 48 8B 51 ?? 48 FF");
-    auto WTGViewMatrix              = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
-    auto OnAddEntityFunc            = PatternFinder::PatternScan((char*)"client.dll",           "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
-    auto OnRemoveEntityFunc         = PatternFinder::PatternScan((char*)"client.dll",           "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
-    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan((char*)"client.dll",           "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
-    IsVisibleByTeam                 = (t4)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
-    auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan((char*)"client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
-    auto WTGCvarProcessor_main      = PatternFinder::PatternScan((char*)"engine2.dll",          "48 89 ?? ?? ?? 48 89 ?? ?? ?? 44 89 ?? ?? ?? 57 41");
-    ConColorMsg                     = (t10)PatternFinder::PatternScan((char*)"tier0.dll",       "4C 8B ?? 49 89 ?? ?? 4D 89 ?? ?? 4D 89 ?? ?? 53 55");
-#ifdef _DEBUG
-    auto WTGEnterScope = (t11)PatternFinder::PatternScan((char*)"tier0.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 56 41 ?? 41 ?? 48 83 EC ?? 4D 8B");
+    //auto test = PatternFinder::PatternScan((char*)"client.dll", "13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 ");//crash test
+    
+    long long SomeKindOfPool_offset = (long long)PatternFinder::PatternScan("client.dll", "48 8B ? ? ? ? ? 8B 0D ? ? ? ? BE");
+    auto SomeKindOfPool_ptr = GetAddressFromInstruction(SomeKindOfPool_offset, 3, 7);
+    
+    while (!SomeKindOfPool_ptr)
+        Sleep(100);
 
-    CalculateCastRange              = (t3)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
-    DrawParticleOnEntity            = (t5)PatternFinder::PatternScan((char*)"client.dll",       "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
-    FindOrCreateParticleOrSomething = (t6)PatternFinder::PatternScan((char*)"particles.dll",    "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
-    PingCoordinateWriter            = (__int64*)PatternFinder::PatternScan((char*)"client.dll", "F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
-    auto ParticleNameCutter         = PatternFinder::PatternScan((char*)"particles.dll",        "0F B6 ?? 4C 8B ?? 44 8B");
-    stricmp_valve                   = (t7)PatternFinder::PatternScan((char*)"tier0.dll",        "4C 8B ?? 48 3B ?? 74 ?? 48 85");
-    auto WTGCvarProcessor_particle  = PatternFinder::PatternScan((char*)"particles.dll",        "4C 8B ?? 53 57 48 81 EC");
-    auto WTGCvarProcessor_client    = PatternFinder::PatternScan((char*)"client.dll",           "4C 8B ?? 53 57 48 81 EC ?? ?? ?? ?? 0F 29");
-    auto LocalPLayerOrSomething = PatternFinder::PatternScan((char*)"client.dll",               "44 0F ?? ?? ?? ?? ?? ?? 41 BC ?? ?? ?? ?? 66 45 ?? ?? 0F 84 ?? ?? ?? ?? 4C 89");
+    GameEntitySystem = *(CGameEntitySystem**)SomeKindOfPool_ptr;
+
+    auto C_DOTAPlayer_HeroIndexOffset_sign = PatternFinder::PatternScan("client.dll", "8B 93 ?? ?? ?? ?? 41 BE");
+
+    
+    
+   /* while (!GameEntitySystem)
+        Sleep(100);
+    
+    auto q = GameEntitySystem->GetPlayerPool();
+
+    auto w = q->GetPlayerHighestIndex();*/
+
+
+    auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan("client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
+    auto InBattleCameraFunc         = PatternFinder::PatternScan("client.dll",  "48 8B 01 48 8B 51 ?? 48 FF");
+    auto WTGViewMatrix              = PatternFinder::PatternScan("engine2.dll", "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
+    auto OnAddEntityFunc            = PatternFinder::PatternScan("client.dll",  "48 89 ?? ?? ?? 56 48 83 EC ?? 48 8B ?? 41 8B ?? B9 ?? ?? ?? ?? 48 8B");
+    auto OnRemoveEntityFunc         = PatternFinder::PatternScan("client.dll",  "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 41 8B ?? 25");
+    auto WTGCParticleSystemMgr      = PatternFinder::PatternScan("client.dll",  "41 0F ?? ?? 48 8B ?? 4C 8B ?? 41 B1");
+    IsVisibleByTeam             = (t4)PatternFinder::PatternScan("client.dll",  "48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? ?? ?? ?? ?? 8B FA 48 8B ? 48 85");
+    auto WTGCvarProcessor_main      = PatternFinder::PatternScan("engine2.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 44 89 ?? ?? ?? 57 41");
+    ConColorMsg                = (t10)PatternFinder::PatternScan("tier0.dll",   "4C 8B ?? 49 89 ?? ?? 4D 89 ?? ?? 4D 89 ?? ?? 53 55");
+
+    auto WTGEnterScope = (t11)PatternFinder::PatternScan("tier0.dll", "48 89 ?? ?? ?? 48 89 ?? ?? ?? 56 41 ?? 41 ?? 48 83 EC ?? 4D 8B");
+
+    CalculateCastRange              =   (t3)PatternFinder::PatternScan("client.dll",     "48 89 ?? ?? ?? 48 89 ?? ?? ?? 57 48 83 EC ?? 48 8B ?? 49 8B ?? 48 8B ?? FF 90");
+    DrawParticleOnEntity            =   (t5)PatternFinder::PatternScan("client.dll",     "48 89 ?? ?? ?? 48 89 ?? ?? ?? 48 89 ?? ?? ?? 55 41 ?? 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 4C 8B ?? 45 8B");
+    FindOrCreateParticleOrSomething =   (t6)PatternFinder::PatternScan("particles.dll",  "48 8B ? 57 48 81 EC ? ? ? ? 48 8B");
+    PingCoordinateWriter        = (__int64*)PatternFinder::PatternScan("client.dll",     "F3 41 ?? ?? ?? ?? ?? ?? ?? F3 0F ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? F3 41 ?? ?? ?? ?? ?? ?? ?? FF 90");
+    auto ParticleNameCutter         =       PatternFinder::PatternScan("particles.dll",  "0F B6 ?? 4C 8B ?? 44 8B");
+    stricmp_valve                   = (t7)  PatternFinder::PatternScan("tier0.dll",      "4C 8B ?? 48 3B ?? 74 ?? 48 85");
+    auto WTGCvarProcessor_particle  =       PatternFinder::PatternScan("particles.dll",  "4C 8B ?? 53 57 48 81 EC");
+    auto WTGCvarProcessor_client    =       PatternFinder::PatternScan("client.dll",     "4C 8B ?? 53 57 48 81 EC ?? ?? ?? ?? 0F 29");
+    auto LocalPLayerOrSomething     =       PatternFinder::PatternScan("client.dll",     "44 0F ?? ?? ?? ?? ?? ?? 41 BC ?? ?? ?? ?? 66 45 ?? ?? 0F 84 ?? ?? ?? ?? 4C 89");
     
     //printf("\nCDOTAInventoryManager: %llx\nxuinya: %llx", CDOTAInventoryMgr,xuinya);
         //00007FFCBFF4DE55 + 01C1D644 + 7 = 7FFCC1B6B4A0
@@ -326,80 +344,237 @@ Address of signature = client.dll + 0x01EDA100
 
  */
 
+    
 
 #pragma warning(disable : 4477) //to prevent flood in IDE output
+    bool ok = 1;
+#pragma region check
 
-    if (InBattleCameraFunc == nullptr)///////////////////////
-        printf("\nERROR: InBattleCameraFunc sig not found");
-    else
-        printf("\nInBattleCameraFunc: \t%llx", InBattleCameraFunc);
-    if (WTGViewMatrix == nullptr)/////////////////////
-        printf("\nERROR: WTGViewMatrix sig not found");
-    else
-        printf("\nWTGViewMatrix: \t%llx", WTGViewMatrix);
-    if (OnAddEntityFunc == nullptr)//////////////////////////
-        printf("\nERROR: OnAddEntityFunc sig not found");
-    else
-        printf("\nOnAddEntity: \t%llx", OnAddEntityFunc);
-    if (OnRemoveEntityFunc == nullptr)///////////////////////
-        printf("\nERROR: OnRemoveEntity sig not found");
-    else
-        printf("\nOnRemoveEntity: \t%llx", OnRemoveEntityFunc);
-    if (CalculateCastRange == nullptr)///////////////////////
-        printf("\nERROR: GetCastRange sig not found");
-    else
-        printf("\nGetCastRange: \t%llx", CalculateCastRange);
-    if (IsVisibleByTeam == nullptr)///////////////////////
-        printf("\nERROR: IsVisibleByTeam sig not found");
-    else
-        printf("\nIsVisibleByTeam: \t%llx", IsVisibleByTeam);
-    if (DrawParticleOnEntity == nullptr)///////////////////////
-        printf("\nERROR: DrawParticleOnEntity sig not found");
-    else
-        printf("\nDrawParticleOnEntity: \t%llx", DrawParticleOnEntity);
-    if (WTGCParticleSystemMgr == nullptr)///////////////////////
-        printf("\nERROR: WTGCParticleSystemMgr sig not found");
-    else
-        printf("\nWTGCParticleSystemMgr: \t%llx", WTGCParticleSystemMgr);
-    if (FindOrCreateParticleOrSomething == nullptr)///////////////////////
-        printf("\nERROR: FindOrCreateParticleOrSomething sig not found");
-    else
-        printf("\nFindOrCreateParticleOrSomething: \t%llx", FindOrCreateParticleOrSomething);
-    if (PingCoordinateWriter == nullptr)///////////////////////
-        printf("\nERROR: PingCoordinateWriter sig not found");
-    else
-        printf("\nPingCoordinateWriter: \t%llx", PingCoordinateWriter);
-    if (ParticleNameCutter == nullptr)///////////////////////
-        printf("\nERROR: ParticleNameCutter sig not found");
-    else
-        printf("\nParticleNameCutter: \t%llx", ParticleNameCutter);
-    if (stricmp_valve == nullptr)///////////////////////
-        printf("\nERROR: stricmp_valve sig not found");
-    else
-        printf("\nstricmp_valve: \t%llx", stricmp_valve);
-    if (WTGSelectableUnitCollidedWithCursor == nullptr)///////////////////////
-        printf("\nERROR: WTGSelectableUnitCollidedWithCursor sig not found");
-    else
-        printf("\n WTGSelectableUnitCollidedWithCursor: \t%llx", WTGSelectableUnitCollidedWithCursor);
-    if (WTGCvarProcessor_particle == nullptr)///////////////////////
-        printf("\nERROR: WTGCvarProcessor_particle sig not found");
-    else
-        printf("\nWTGCvarProcessor_particle: \t%llx", WTGCvarProcessor_particle);
-    if (WTGCvarProcessor_client == nullptr)///////////////////////
-        printf("\nERROR: WTGCvarProcessor_client sig not found");
-    else
-        printf("\nWTGCvarProcessor_client: \t%llx", WTGCvarProcessor_client);
-    if (WTGCvarProcessor_main == nullptr)///////////////////////
-        printf("\nERROR: WTGCvarProcessor_main sig not found");
-    else
-        printf("\nWTGCvarProcessor_main: \t%llx", WTGCvarProcessor_main);
-    if (LocalPLayerOrSomething == nullptr)///////////////////////
-        printf("\nERROR: LocalPLayerOrSomething sig not found");
-    else
-        printf("\nLocalPLayerOrSomething: \t%llx", LocalPLayerOrSomething);
-    
+	if (InBattleCameraFunc == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: InBattleCameraFunc sig not found");
 #endif
-    
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nInBattleCameraFunc: \t%llx", InBattleCameraFunc);
+#endif
+	if (WTGViewMatrix == nullptr)/////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: WTGViewMatrix sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nWTGViewMatrix: \t%llx", WTGViewMatrix);
+#endif
+	if (OnAddEntityFunc == nullptr)//////////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: OnAddEntityFunc sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nOnAddEntity: \t%llx", OnAddEntityFunc);
+#endif
+	if (OnRemoveEntityFunc == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: OnRemoveEntity sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nOnRemoveEntity: \t%llx", OnRemoveEntityFunc);
+#endif
+	if (CalculateCastRange == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: GetCastRange sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nGetCastRange: \t%llx", CalculateCastRange);
+#endif
+	if (IsVisibleByTeam == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: IsVisibleByTeam sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nIsVisibleByTeam: \t%llx", IsVisibleByTeam);
+#endif
+	if (DrawParticleOnEntity == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: DrawParticleOnEntity sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nDrawParticleOnEntity: \t%llx", DrawParticleOnEntity);
+#endif
+	if (WTGCParticleSystemMgr == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: WTGCParticleSystemMgr sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nWTGCParticleSystemMgr: \t%llx", WTGCParticleSystemMgr);
+#endif
+	if (FindOrCreateParticleOrSomething == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: FindOrCreateParticleOrSomething sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nFindOrCreateParticleOrSomething: \t%llx", FindOrCreateParticleOrSomething);
+#endif
+	if (PingCoordinateWriter == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: PingCoordinateWriter sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nPingCoordinateWriter: \t%llx", PingCoordinateWriter);
+#endif
+	if (ParticleNameCutter == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: ParticleNameCutter sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nParticleNameCutter: \t%llx", ParticleNameCutter);
+#endif
+	if (stricmp_valve == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: stricmp_valve sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nstricmp_valve: \t%llx", stricmp_valve);
+#endif
+	if (WTGSelectableUnitCollidedWithCursor == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: WTGSelectableUnitCollidedWithCursor sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\n WTGSelectableUnitCollidedWithCursor: \t%llx", WTGSelectableUnitCollidedWithCursor);
+#endif
+	if (WTGCvarProcessor_particle == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: WTGCvarProcessor_particle sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nWTGCvarProcessor_particle: \t%llx", WTGCvarProcessor_particle);
+#endif
+	if (WTGCvarProcessor_client == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: WTGCvarProcessor_client sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nWTGCvarProcessor_client: \t%llx", WTGCvarProcessor_client);
+#endif
+	if (WTGCvarProcessor_main == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: WTGCvarProcessor_main sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nWTGCvarProcessor_main: \t%llx", WTGCvarProcessor_main);
+#endif
+	if (LocalPLayerOrSomething == nullptr)///////////////////////
+	{
+#ifdef _DEBUG 
+		printf("\nERROR: LocalPLayerOrSomething sig not found");
+#endif
+		ok = 0;
+	}
+#ifdef _DEBUG
+	else 
+		printf("\nLocalPLayerOrSomething: \t%llx", LocalPLayerOrSomething);
+#endif
+    if (C_DOTAPlayer_HeroIndexOffset_sign == nullptr)///////////////////////
+    {
+#ifdef _DEBUG 
+        printf("\nERROR: C_DOTAPlayer_HeroIndexOffset_sign sig not found");
+#endif
+        ok = 0;
+    }
+#ifdef _DEBUG
+    else
+        printf("\nC_DOTAPlayer_HeroIndexOffset_sign: \t%llx", C_DOTAPlayer_HeroIndexOffset_sign);
+#endif
+
+
+#pragma endregion
+
+//    if (test == nullptr)///////////////////////
+//    {
+//#ifdef _DEBUG 
+//        printf("\nERROR: test sig not found");
+//#endif
+//        ok = 0;
+//    }
+//#ifdef _DEBUG
+//	else 
+//        printf("\test: \t%llx", test);
+//#endif
+
+	if (!ok)
+	{
+#ifdef _DEBUG 
+		printf("Something is wrong. Stuff need some update");
+#else
+        FreezeGame = 1;
+#endif
+		Sleep(-1);
+	}
+
+    C_DOTAPlayer_HeroIndexOffset = *(short*)((char*)C_DOTAPlayer_HeroIndexOffset_sign +2);
 
     hk.set_hook((char*)OnAddEntityFunc, 16, (char*)OnAddEntity, (char**)&OnAddEntityRet);
     hk.set_hook((char*)OnRemoveEntityFunc, 16, (char*)OnRemoveEntity, (char**)&OnRemoveEntityRet);
