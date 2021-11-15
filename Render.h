@@ -180,7 +180,7 @@ TODO:
 				if (ent)
 				{
 					auto MyTeam = ent->GetTeam();
-					if (MyTeam == 2 || MyTeam == 3)
+					if (MyTeam == DOTATeam_t::DOTA_TEAM_DIRE || MyTeam == DOTATeam_t::DOTA_TEAM_RADIANT)
 					{
 						sprintf(label, "[%s]%s", TeamName(MyTeam), ent->GetNpcInfo()->GetNpcName());
 						if (ImGui::Button(label))
