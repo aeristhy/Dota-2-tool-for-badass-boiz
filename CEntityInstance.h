@@ -94,12 +94,24 @@ class Modifier {
 public:
 	__inline char* Name()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		__int64* qq = (__int64*)(((char*)this) + 0x28);//0x10 -> 0x28
 		char* str = *(char**)qq;						//i did not noticed date then offset changed. Fixed 07.11.2021 23:09. :>
+#ifdef CrashCatcher
+		if (!str)
+			_log.Append(__func__, "str", "is null", hazard_level::NamPizda);
+#endif
 		return str;
 	}
 	__inline DOTATeam_t GetTeamOwner()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(DOTATeam_t*)(((char*)this) + 0x80);
 	}
 #ifdef _DEBUG
@@ -113,8 +125,13 @@ public:
 
 class ModifierPool {
 public:
+
 	__inline Modifier* GetModifier(int index)
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		__int64 qq = (__int64)((*(__int64*)this) + index*8);
 		return *(Modifier**)qq;
 	}
@@ -129,10 +146,18 @@ class NetworkVar_m_skeletonInstance
 public:
 	__inline float* GetPos()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return (float*)((char*)this + 0x10);
 	}
 	__inline __int64* GetHeroBySkeleton()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		auto q = (char*)this + 0x30;
 		return *(__int64**)q;
 	}
@@ -143,6 +168,10 @@ class ParticleMgr
 public:
 	__inline __int64* GetParticleHost() //CParticlesLibHost_Client
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return (__int64*)((char*)this + 0x8);
 	}
 };
@@ -169,36 +198,64 @@ public:
 	}*/
 	__inline char* GetName()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		auto temp = *(char**)((char*)this + 0x10);
 		return *((char**)((char*)temp + 0x18));
 		//*(float*)((char*)this + 0x5A8);
 	}
 	__inline char GetLevel()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *((char*)this + 0x5A0);
 	}
 
 	__inline float GetMaxCooldown()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(float*)((char*)this + 0x5AC);
 	}
 	__inline float GetLastCooldown()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(float*)((char*)this + 0x5A8);
 	}
 
 	__inline float GetManacost()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(float*)((char*)this + 0x5B0);
 	}
 
 	__inline char GetCharges()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *((char*)this + 0x5CC);
 	}
 
 	__inline float GetLastChargeCooldown()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(float*)((char*)this + 0x5D0);
 	}
 };
@@ -208,15 +265,27 @@ class NPCInfo
 public:
 	char* GetNpcName()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(char**)((char*)this + 0x18) +14;
 	}
 	CBaseAblity* GetAbility(int i)
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		i+=1;
 		return *(CBaseAblity**)((char*)this + i* 0x78);
 	}
 	char GetAbilityCount()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		char count = 0;
 		for (int i = 0; i < 16; i++)
 		{		
@@ -257,6 +326,10 @@ public:
     virtual CSchemaClassBinding* Schema_DynamicBinding(void);
 	__inline NPCInfo* GetNpcInfo()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(NPCInfo**)((char*)this + 0x10);
 	}
 	/*
@@ -281,30 +354,58 @@ public:
 
 	__inline NetworkVar_m_skeletonInstance* GetSleleton()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return (NetworkVar_m_skeletonInstance*)*(__int64*)((char*)this + 0x310);
 	}
 	__inline CRenderComponent* GetRenderComponent()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return (CRenderComponent*)*(__int64*)((char*)this + 0x318);
 	}
 	__inline __int32 GetMaxHealth()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(__int32*)((char*)this + 0x328);
 	}
 	__inline __int32 GetCurrentHealth()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(__int32*)((char*)this + 0x32C);
 	}
 	__inline DOTATeam_t GetTeam()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *((DOTATeam_t*)this + 0x3AF);
 	}
 	__inline ParticleMgr* GetParticleMgr()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return ((ParticleMgr*)((char*)this + 0x490));
 	}
 	__inline __int32 GetEntityIndex()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *(__int32*)((char*)this + 0x630);
 	}
 
@@ -316,6 +417,10 @@ public:
 	}*/
 	__inline char GetModifiersCount()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return *((char*)this + 0xE40);
 		//Calve moved it 0xE20->0xE28 in summer 2021 (july) 
 		//Calve moved it 0xE28->0xE40 in autumn 2021 (september)
@@ -323,6 +428,10 @@ public:
 
 	__inline ModifierPool* GetModifiersPool()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return (ModifierPool*)((char*)this + 0xE48);
 		//Calve moved it 0xE28->0xE30 in summer 2021 (july)
 		//Calve moved it 0xE30->0xE48 in autumn 2021 (september) //compendium update?
@@ -334,6 +443,10 @@ class Hud {
 public:
 	float* GetLastPingCoord()
 	{
+#ifdef CrashCatcher
+		if (!this)
+			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
+#endif
 		return (float*)((char*)this + 0x17C);
 	}
 };

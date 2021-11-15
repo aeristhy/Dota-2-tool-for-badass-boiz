@@ -180,14 +180,23 @@ TODO:
 				if (ent)
 				{
 					auto MyTeam = ent->GetTeam();
-					sprintf(label, "[%s]%s", TeamName(MyTeam), ent->GetNpcInfo()->GetNpcName());
-					if (ImGui::Button(label))
+					if (MyTeam == 2 || MyTeam == 3)
 					{
-						LocalPlayer = ent;
-						LocalPlayerID = w;
-						localPlayerTeam = MyTeam;
-						EnemyTeam = (ent->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT);
-						break;
+						sprintf(label, "[%s]%s", TeamName(MyTeam), ent->GetNpcInfo()->GetNpcName());
+						if (ImGui::Button(label))
+						{
+							MinimapBounds_x_min = *(MinimapBounds_offset + 4);
+							MinimapBounds_y_min = MinimapBounds_x_min + 4;
+							MinimapBounds_x_max = MinimapBounds_x_min + 12;
+							MinimapBounds_y_max = MinimapBounds_x_min + 16;
+
+
+							LocalPlayer = ent;
+							LocalPlayerID = w;
+							localPlayerTeam = MyTeam;
+							EnemyTeam = (ent->GetTeam() == 2 ? DOTATeam_t::DOTA_TEAM_DIRE : DOTATeam_t::DOTA_TEAM_RADIANT);
+							break;
+						}
 					}
 				}
 
@@ -206,7 +215,9 @@ TODO:
 #endif
 		debugWindow();
 	}
-
+#ifdef _DEBUG
+	ImGui::InputInt("##123123", &qwqe);
+#endif
 	ImGui::Text("HP Panel");
 	ImGui::SameLine();
 	ImGui::Checkbox("##Heath_Panel_checkbox", &DrawHealthPanel);

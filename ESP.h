@@ -77,6 +77,36 @@ engine2.dll+2ED691 - C3                    - ret
 	return true;
 }
 
+void WorldToMinimap(float* pos, vec2 * screen)
+{
+	/*
+	World is size 1000x1000.
+	Minimap is size 2x2.
+	Ignore z - axis.
+	Player is in position 230x740.
+	Calculate x - position on minimap as 230 * 2 / 1000,
+	y - position as 740 * 2 / 1000.
+	*/
+	auto q = MinimapBoundsManipulator->GetBoundsMax();
+	auto w = MinimapBoundsManipulator->GetBoundsMin();
+
+	/*w.x *= -1;
+	w.y *= -1;*/
+
+	auto r = (q.x * w.x);
+	float d = (pos[0]) / r;
+	//d *= 1.7;
+	//if (d < 0)
+	//	d *= -1;
+	float f = (pos[1]) / (q.y * w.y);
+	//if (f < 0)
+	//	f *= -1;
+
+	screen->x = d;
+	screen->y = f;
+}
+
+
 void esp(LPDIRECT3DDEVICE9 pDevice)
 {
 	
@@ -137,6 +167,8 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 				long long temp = fuckingMatrix + 0x288;
 				WorldToScreen(*(D3DVECTOR*)heroVec3, &screen, (float*)temp, view.Width, view.Height);
 
+				
+
 				RECT rect;
 				rect.left = screen.x;
 				rect.top = screen.y;
@@ -165,6 +197,11 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 					if (heroIsVisible)
 					{
 						DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
+#ifdef _DEBUG
+						vec2 minimapper = {0,0};
+						WorldToMinimap(ent->GetSleleton()->GetPos(), &minimapper);
+						DrawFilledRect11(minimapper.x,(view.Height - 260) + minimapper.y, 10, 5, quad_color2, pDevice);
+#endif
 					}
 				}
 				else //if heroTeam==EnemyTeam

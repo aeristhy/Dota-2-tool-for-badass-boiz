@@ -4,16 +4,21 @@
 #include "CGameEntitySystem.h"
 #include "vector.h"
 #include "CDOTAInventoryManager.h"
+#include "MinimapBounds.h"
 
 struct vec2 {
 	int x;
 	int y;
 };
+int qwqe = 520;
+
+
 
 /*
 Misc
 */
-
+MinimapBounds* MinimapBoundsManipulator = 0;
+char* MinimapBounds_offset = 0;
 char undercursor_buff[256];
 vec2 undercursor_screen;
 vec2 undercursor_screen_point;

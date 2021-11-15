@@ -1,8 +1,11 @@
 #pragma once
+
+#ifdef CrashCatcher
+#include "Logger.h"
+#endif
+
 #include "CustomTypes.h"
-
 #include "gh_d3d9.h"
-
 #include <Windows.h>
 #include <d3d9.h>
 #include "Include/d3dx9.h"
@@ -164,6 +167,8 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
     return OnRemoveEntityRet(ecx, ptr, index);
 }
 
+
+
 __int64 GetAddressFromInstruction(__int64 instruction,char offset,char len, int extra_offset = 0)
 /*example: 7FF965D651E2  movzx r14d,word ptr [7FF968B606D8]
                                44 0F B7 35    |EE B4 DF 02| (it's i32 value == 02 DF B4 EE)
@@ -188,14 +193,20 @@ target address      = (__int64)7FF968B606D8
     auto relative_address = *(__int32*)(meow + offset);
     return meow + relative_address + len;
 }
+
+#define cstrAndLen(var) var,sizeof(var)
+
 void Init()
 { 
+
     bool res = false;
 	while (!res)
 	{
         res = GetD3D9Device(d3d9Device, sizeof(d3d9Device));
 	}
-   
+#ifdef CrashCatcher
+    _log.Append(cstrAndLen("start of log\n\n"));
+#endif
 
     while (!ProcessWindowHandle)
         ProcessWindowHandle = FindWindowA("SDL_app", 0);
@@ -255,6 +266,16 @@ FuncPointer укажет на метод класса.
     auto w = q->GetPlayerHighestIndex();*/
 
 
+    /*
+    
+    World is size 1000x1000. 
+    Minimap is size 2x2. 
+    Ignore z-axis. 
+    Player is in position 230x740. 
+    Calculate x-position on minimap as 230*2/1000, y-position as 740*2/1000.
+    
+    */
+
     auto WTGSelectableUnitCollidedWithCursor = (t8)PatternFinder::PatternScan("client.dll", "4C 8B ?? 55 57 41 ?? 48 81 EC ?? ?? ?? ?? 48 8B");
     auto InBattleCameraFunc         = PatternFinder::PatternScan("client.dll",  "48 8B 01 48 8B 51 ?? 48 FF");
     auto WTGViewMatrix              = PatternFinder::PatternScan("engine2.dll", "48 89 ?? ?? ?? ?? ?? 49 03 ?? 48 8B");
@@ -276,7 +297,8 @@ FuncPointer укажет на метод класса.
     auto WTGCvarProcessor_particle  =       PatternFinder::PatternScan("particles.dll",  "4C 8B ?? 53 57 48 81 EC");
     auto WTGCvarProcessor_client    =       PatternFinder::PatternScan("client.dll",     "4C 8B ?? 53 57 48 81 EC ?? ?? ?? ?? 0F 29");
     auto LocalPLayerOrSomething     =       PatternFinder::PatternScan("client.dll",     "44 0F ?? ?? ?? ?? ?? ?? 41 BC ?? ?? ?? ?? 66 45 ?? ?? 0F 84 ?? ?? ?? ?? 4C 89");
-    
+    auto MinimapBounds_class        =       PatternFinder::PatternScan("client.dll",     "4C 8B ?? 55 56 57 48 83 EC");
+    MinimapBounds_offset            =(char*)PatternFinder::PatternScan("client.dll",     "F3 0F ?? ?? ?? 45 33 ?? 41 BA");//"8B 41 ?? 89 02 8B 41 ?? 89 42 ?? 8B 41 ?? 89 42 ?? 8B 41 ?? 41 89 ?? 8B 81");
     //printf("\nCDOTAInventoryManager: %llx\nxuinya: %llx", CDOTAInventoryMgr,xuinya);
         //00007FFCBFF4DE55 + 01C1D644 + 7 = 7FFCC1B6B4A0
 
@@ -548,6 +570,17 @@ Address of signature = client.dll + 0x01EDA100
     else
         printf("\nC_DOTAPlayer_HeroIndexOffset_sign: \t%llx", C_DOTAPlayer_HeroIndexOffset_sign);
 #endif
+    if (MinimapBounds_class == nullptr)///////////////////////
+    {
+#ifdef _DEBUG 
+        printf("\nERROR: MinimapBounds_class sig not found");
+#endif
+        ok = 0;
+    }
+#ifdef _DEBUG
+    else
+        printf("\n MinimapBounds_class: \t%llx", MinimapBounds_class);
+#endif
 
 
 #pragma endregion
@@ -573,6 +606,10 @@ Address of signature = client.dll + 0x01EDA100
 #endif
 		Sleep(-1);
 	}
+
+    hk.set_reg_stealer((char*)MinimapBounds_class, 16, (char*)&MinimapBoundsManipulator, r::rcx);
+
+    
 
     C_DOTAPlayer_HeroIndexOffset = *(short*)((char*)C_DOTAPlayer_HeroIndexOffset_sign +2);
 
