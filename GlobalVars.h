@@ -82,6 +82,7 @@ DOTATeam_t	EnemyTeam;
 /*
 settings visual
 */
+
 #define blyaaaa 240
 char	PointsToDraw_Names[blyaaaa];//60 names with 4 chars ##q\0
 float   pointstodraw[20][3];

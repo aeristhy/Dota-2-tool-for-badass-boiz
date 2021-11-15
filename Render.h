@@ -159,8 +159,8 @@ TODO:
 	else
 		ImGui::Begin("Lick the dick :p");                      
 	{
-		char label[50];
-		memset(label, 0, 50);
+		char label[100];
+		memset(label, 0, 100);
 		
 		if (!LocalPlayer)
 		{
@@ -182,7 +182,8 @@ TODO:
 					auto MyTeam = ent->GetTeam();
 					if (MyTeam == DOTATeam_t::DOTA_TEAM_DIRE || MyTeam == DOTATeam_t::DOTA_TEAM_RADIANT)
 					{
-						sprintf(label, "[%s]%s", TeamName(MyTeam), ent->GetNpcInfo()->GetNpcName());
+						
+						sprintf(label, "[%s]%s", TeamName(MyTeam), ent->Schema_DynamicBinding()->binaryName+17);
 						if (ImGui::Button(label))
 						{
 							MinimapBounds_x_min = *(MinimapBounds_offset + 4);

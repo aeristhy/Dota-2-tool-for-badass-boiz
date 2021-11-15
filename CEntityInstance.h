@@ -269,7 +269,10 @@ public:
 		if (!this)
 			_log.Append(__func__, "this", "is null", hazard_level::NamPizda);
 #endif
-		return *(char**)((char*)this + 0x18) +14;
+		if (this)
+			return *(char**)((char*)this + 0x18) + 14;
+		else
+			return (char*)"dontcrashplease";
 	}
 	CBaseAblity* GetAbility(int i)
 	{
