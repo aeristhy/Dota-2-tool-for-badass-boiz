@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков\structs">
+      <UniqueIdentifier>{7c1eae4d-ff72-4a43-91b1-4a81fcbfa9bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\util">
+      <UniqueIdentifier>{8ac935c5-f0a6-408b-aa8d-d249c14b2bfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\callbacks">
+      <UniqueIdentifier>{41b30935-52b1-4dcd-9255-6ef848409727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\vars">
+      <UniqueIdentifier>{246ee8a4-95a3-439f-9f66-215acba8e650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\ToBeProcessed">
+      <UniqueIdentifier>{c2bd0422-ead3-4585-822e-599e3c63e939}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -21,92 +36,113 @@
     <ClInclude Include="pch.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="GlobalVars.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Init.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="WndProc.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Render.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomTypes.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="IAppSystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CGameEntitySystem.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CEntityInstance.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Color.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Schema.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="vector.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="PatternFinder.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CDOTA_Camera.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="ESP.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="connector.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Sync.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectableUnitCollidedWithCursor.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CInputService.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CVarChangeCallback.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CConVar.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="cl_particle_simulate.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CConCommandMemberAccessor.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="CRenderComponent.h">
+    <ClInclude Include="vec2.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="C_DOTAPlayer.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CConCommandMemberAccessor.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CConVar.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CDOTA_Camera.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CDOTA_PanoramaMinimapRenderer.h">
+      <Filter>Файлы заголовков\structs</Filter>
     </ClInclude>
     <ClInclude Include="CDOTAInventoryManager.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CEntityInstance.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameEntitySystem.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CInputService.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="cl_particle_simulate.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CRenderComponent.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="CVarChangeCallback.h">
+      <Filter>Файлы заголовков\structs</Filter>
     </ClInclude>
     <ClInclude Include="EnterScope.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\structs</Filter>
     </ClInclude>
-    <ClInclude Include="offsets.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="IAppSystem.h">
+      <Filter>Файлы заголовков\structs</Filter>
     </ClInclude>
     <ClInclude Include="MinimapBounds.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="PatternFinder.h">
+      <Filter>Файлы заголовков\util</Filter>
+    </ClInclude>
+    <ClInclude Include="connector.h">
+      <Filter>Файлы заголовков\util</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
+      <Filter>Файлы заголовков\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Файлы заголовков\callbacks</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectableUnitCollidedWithCursor.h">
+      <Filter>Файлы заголовков\callbacks</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomTypes.h">
+      <Filter>Файлы заголовков\vars</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalVars.h">
+      <Filter>Файлы заголовков\vars</Filter>
+    </ClInclude>
+    <ClInclude Include="offsets.h">
+      <Filter>Файлы заголовков\vars</Filter>
+    </ClInclude>
+    <ClInclude Include="Sync.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderHookedCallback11.h">
+      <Filter>Файлы заголовков\callbacks</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderHookedCallback9.h">
+      <Filter>Файлы заголовков\callbacks</Filter>
+    </ClInclude>
+    <ClInclude Include="Schema.h">
+      <Filter>Файлы заголовков\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="WndProc.h">
+      <Filter>Файлы заголовков\callbacks</Filter>
+    </ClInclude>
+    <ClInclude Include="insreader.h">
+      <Filter>Файлы заголовков\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -116,25 +152,100 @@
     <ClCompile Include="pch.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\imgui.cpp">
+    <ClCompile Include="D3D11StateSaver.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1ColorRGBAInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1DWriteRenderTargetInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1Factory.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1FactoryInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1FontWrapper.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1FontWrapperInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphAtlas.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphAtlasInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphProvider.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphProviderInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphRenderStates.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphRenderStatesInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphSheet.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphSheetInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphVertexDrawer.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1GlyphVertexDrawerInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1StateSaver.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1TextGeometry.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1TextGeometryInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1TextRenderer.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\CFW1TextRendererInterface.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\FW1FontWrapper.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="FW1FontWrapper\FW1Precompiled.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Renderer.cpp">
+      <Filter>Исходные файлы\ToBeProcessed</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\imgui_demo.cpp">
+    <ClCompile Include="imgui\imgui_demo.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\imgui_draw.cpp">
+    <ClCompile Include="imgui\imgui_draw.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\imgui_tables.cpp">
+    <ClCompile Include="imgui\imgui_tables.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\imgui_widgets.cpp">
+    <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\backends\imgui_impl_dx9.cpp">
+    <ClCompile Include="imgui\backends\imgui_impl_dx11.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\imgui\backends\imgui_impl_win32.cpp">
+    <ClCompile Include="imgui\backends\imgui_impl_win32.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

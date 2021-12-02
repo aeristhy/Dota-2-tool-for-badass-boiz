@@ -5,7 +5,6 @@
 #endif
 
 #include "CustomTypes.h"
-#include "gh_d3d9.h"
 #include <Windows.h>
 #include <d3d9.h>
 #include "Include/d3dx9.h"
@@ -167,49 +166,29 @@ void OnRemoveEntity(CGameEntitySystem* ecx, CBaseEntity* ptr, EntityHandle index
     return OnRemoveEntityRet(ecx, ptr, index);
 }
 
-
-
-__int64 GetAddressFromInstruction(__int64 instruction,char offset,char len, int extra_offset = 0)
-/*example: 7FF965D651E2  movzx r14d,word ptr [7FF968B606D8]
-                               44 0F B7 35    |EE B4 DF 02| (it's i32 value == 02 DF B4 EE)
-                                              """""""""""""\---> this part is relative address
-                                                                i should calculate instruction addres + this part
-                                                                instruction_address = a
-                                                                relative_address_part_offset = a + 4
-                                                                relative_address    = c
-                                                                absolute_address = *(__int32*)relative_address_part_offset + instruction_address + instruction_size
-so 
-instruction_address = (__int64)7FF965D651E2
-relative address    = (__int32)02DFB4EE
-target address      = (__int64)7FF968B606D8
-7FF965D651E2 + 02DFB4EE + 8 =  7FF968B606D8
-*/
-
-{
-    auto meow = instruction;
-    if (extra_offset != 0)
-        meow += extra_offset;
-
-    auto relative_address = *(__int32*)(meow + offset);
-    return meow + relative_address + len;
-}
-
 #define cstrAndLen(var) var,sizeof(var)
+
+connector hk;
+
 
 void Init()
 { 
+    
 
-    bool res = false;
-	while (!res)
-	{
-        res = GetD3D9Device(d3d9Device, sizeof(d3d9Device));
-	}
+    while (!GetModuleHandleA("dxgi.dll"))
+        Sleep(1000);
+
+    auto present = PatternFinder::PatternScan("dxgi.dll", "48 89 ?? ?? ?? 55 57 41 ?? 48 8D ?? ?? ?? 48 81 EC ?? ?? ?? ?? 48 8B ?? ?? ?? ?? ?? 48 33 ?? 48 89 ?? ?? 45 33");
+
+    TrampoToBreak = hk.set_hook((char*)present, 14, (char*)meow, (char**)&render_orig);
+    
 #ifdef CrashCatcher
     _log.Append(cstrAndLen("start of log\n\n"));
 #endif
 
     while (!ProcessWindowHandle)
-        ProcessWindowHandle = FindWindowA("SDL_app", 0);
+        ProcessWindowHandle = FindWindowA("SDL_app",0);
+    //ProcessWindowHandle = GetProcessWindow();
 
 #ifdef _DEBUG
     AllocConsole();
@@ -245,14 +224,7 @@ FuncPointer укажет на метод класса.
 #endif
 
     //auto test = PatternFinder::PatternScan((char*)"client.dll", "13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 13 37 ");//crash test
-    
-    long long SomeKindOfPool_offset = (long long)PatternFinder::PatternScan("client.dll", "48 8B ? ? ? ? ? 8B 0D ? ? ? ? BE");
-    auto SomeKindOfPool_ptr = GetAddressFromInstruction(SomeKindOfPool_offset, 3, 7);
-    
-    while (!SomeKindOfPool_ptr)
-        Sleep(100);
-
-    GameEntitySystem = *(CGameEntitySystem**)SomeKindOfPool_ptr;
+   
 
     auto C_DOTAPlayer_HeroIndexOffset_sign = PatternFinder::PatternScan("client.dll", "8B 93 ?? ?? ?? ?? 41 BE");
 
@@ -299,75 +271,10 @@ FuncPointer укажет на метод класса.
     auto LocalPLayerOrSomething     =       PatternFinder::PatternScan("client.dll",     "44 0F ?? ?? ?? ?? ?? ?? 41 BC ?? ?? ?? ?? 66 45 ?? ?? 0F 84 ?? ?? ?? ?? 4C 89");
     auto MinimapBounds_class        =       PatternFinder::PatternScan("client.dll",     "4C 8B ?? 55 56 57 48 83 EC");
     MinimapBounds_offset            =(char*)PatternFinder::PatternScan("client.dll",     "F3 0F ?? ?? ?? 45 33 ?? 41 BA");//"8B 41 ?? 89 02 8B 41 ?? 89 42 ?? 8B 41 ?? 89 42 ?? 8B 41 ?? 41 89 ?? 8B 81");
-    //printf("\nCDOTAInventoryManager: %llx\nxuinya: %llx", CDOTAInventoryMgr,xuinya);
-        //00007FFCBFF4DE55 + 01C1D644 + 7 = 7FFCC1B6B4A0
+    auto PanoramaMinimapRendererPtr =       PatternFinder::PatternScan("client.dll",     "48 83 EC ? F3 0F ? ? ? ? ? ? ? 4C 8B");
+    auto MinimapPixelBounds__offset =       PatternFinder::PatternScan("client.dll",     "41 89 ? ? ? ? ? 41 89 ? ? ? ? ? 41 89 ? ? ? ? ? 49 8B");
 
-    
-    //auto CInputService_StaticAddress PatternFinder::PatternScan((char*)"client.dll", "48 8B ?? ?? ?? ?? ?? 4C 8D ?? ?? 48 8D ?? ?? 48 8B ?? FF 90 ?? ?? ?? ?? 4C 8B");
-    //auto attach_hitloc = PatternFinder::PatternScan((char*)"client.dll", "F3 0F ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F3 0F ?? ?? ?? F2 0F ?? ?? ?? 4C 8D");
-    /*
-    new mask for WTGSelectableUnitCollidedWithCursor
-    Address of signature = client.dll + 0x00A3DB30
-"\x4C\x8B\x00\x55\x57\x41\x00\x48\x81\xEC\x00\x00\x00\x00\x48\x8B", "xx?xxx?xxx????xx"
-"4C 8B ? 55 57 41 ? 48 81 EC ? ? ? ? 48 8B"
-    
-    
-    
-    .................
-    CInputService
-Address of signature = client.dll + 0x00CBFE44
-"\x48\x8B\x00\x00\x00\x00\x00\x4C\x8D\x00\x00\x48\x8D\x00\x00\x48\x8B\x00\xFF\x90\x00\x00\x00\x00\x4C\x8B", "xx?????xx??xx??xx?xx????xx"
-"48 8B ? ? ? ? ? 4C 8D ? ? 48 8D ? ? 48 8B ? FF 90 ? ? ? ? 4C 8B"
-
-
-7FFBF2ADFE44 mov reg,[7FFBF2ADFE44 + 0000029FF785+7]
-7FFBF54DF5D0 CInputService
-
-0000029FF785+7
-
-.................
-attach_hitloc
-
-Address of signature = client.dll + 0x00CBFE89
-"\x48\x8D\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x84\xC0\x75\x00\x49\x8B", "xx?????x????xxx?xx"
-"48 8D ? ? ? ? ? E8 ? ? ? ? 84 C0 75 ? 49 8B"
-
-zapaska 
-Address of signature = client.dll + 0x00CBFEAC
-"\xF3\x0F\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF3\x0F\x00\x00\x00\xF2\x0F\x00\x00\x00\x4C\x8D", "xx??xx???xx???xx???xx???xx???xx???xx"
-"F3 0F ? ? F3 0F ? ? ? F3 0F ? ? ? F3 0F ? ? ? F3 0F ? ? ? F3 0F ? ? ? F2 0F ? ? ? 4C 8D"
-
------------------
-
-   Address of signature = client.dll + 0x00931950
-"\x40\x00\x56\x57\x48\x83\xEC\x00\x48\x8B\x00\x00\x00\x00\x00\x49\x8B\x00\x48\x8B\x00\x48\x8B\x00\xFF\x50\x00\x48\x8B\x00\x48\x8B\x00\x00\x00\x00\x00\x48\x85\x00\x0F\x84\x00\x00\x00\x00\x48\x83\x38\x00\x0F\x84\x00\x00\x00\x00\x48\x89\x00\x00\x00\x33\xDB\x48\x85\x00\x74\x00\x38\x1F", "x?xxxxx?xx?????xx?xx?xx?xx?xx?xx?????xx?xx????xxx?xx????xx???xxxx?x?xx"
-"40 ? 56 57 48 83 EC ? 48 8B ? ? ? ? ? 49 8B ? 48 8B ? 48 8B ? FF 50 ? 48 8B ? 48 8B ? ? ? ? ? 48 85 ? 0F 84 ? ? ? ? 48 83 38 ? 0F 84 ? ? ? ? 48 89 ? ? ? 33 DB 48 85 ? 74 ? 38 1F"
-
-    Address of signature = engine2.dll + 0x000C7F30
-"\x48\x89\x00\x00\x00\x44\x89\x00\x00\x00\x48\x89\x00\x00\x00\x55\x56\x57\x41\x00\x41\x00\x41\x00\x41\x00\x48\x81\xEC", "xx???xx???xx???xxxx?x?x?x?xxx"
-"48 89 ? ? ? 44 89 ? ? ? 48 89 ? ? ? 55 56 57 41 ? 41 ? 41 ? 41 ? 48 81 EC"
-
-__int64 __fastcall sub_7FFA7FC67F30(__int64 *CNetworkStringTable, __int64 CServerSideClient, __int64 a3, int a4)
-
-
-Address of signature = tier0.dll + 0x00008E10
-"\x4C\x8B\x00\x48\x3B\x00\x74\x00\x48\x85", "xx?xx?x?xx"
-"4C 8B ? 48 3B ? 74 ? 48 85"
-
-*/
- /*sub_7FFFD226A100((v5 + 0x124), "particles/ui_mouseactions/range_display.vpcf", 1u, 0i64, 0, &float_zero, 0i64);
- * client.dll+1AFFCE8 - 48 8D 8E 90040000     - lea rcx,[rsi+00000490] why ida thinks it is 0x124?
-rsi == class of entity to draw around
-
-Address of signature = client.dll + 0x01EDA100
-"\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x48\x89\x00\x00\x00\x55\x41\x00\x41\x00\x48\x8D\x00\x00\x00\x48\x81\xEC\x00\x00\x00\x00\x4C\x8B\x00\x45\x8B", "xx???xx???xx???xx?x?xx???xxx????xx?xx"
-"48 89 ? ? ? 48 89 ? ? ? 48 89 ? ? ? 55 41 ? 41 ? 48 8D ? ? ? 48 81 EC ? ? ? ? 4C 8B ? 45 8B"
-
-
- */
-
-    
-
+        
 #pragma warning(disable : 4477) //to prevent flood in IDE output
     bool ok = 1;
 #pragma region check
@@ -581,6 +488,28 @@ Address of signature = client.dll + 0x01EDA100
     else
         printf("\n MinimapBounds_class: \t%llx", MinimapBounds_class);
 #endif
+    if (PanoramaMinimapRendererPtr == nullptr)///////////////////////
+    {
+#ifdef _DEBUG 
+        printf("\nERROR: PanoramaMinimapRendererPtr sig not found");
+#endif
+        ok = 0;
+    }
+#ifdef _DEBUG
+    else
+        printf("\n PanoramaMinimapRendererPtr: \t%llx", PanoramaMinimapRendererPtr);
+#endif
+    if (MinimapPixelBounds__offset == nullptr)///////////////////////
+    {
+#ifdef _DEBUG 
+        printf("\nERROR: MinimapPixelBounds__offset sig not found");
+#endif
+        ok = 0;
+    }
+#ifdef _DEBUG
+    else
+        printf("\n MinimapPixelBounds__offset: \t%llx", MinimapPixelBounds__offset);
+#endif
 
 
 #pragma endregion
@@ -608,9 +537,10 @@ Address of signature = client.dll + 0x01EDA100
 	}
 
     hk.set_reg_stealer((char*)MinimapBounds_class, 16, (char*)&MinimapBoundsManipulator, r::rcx);
-
+    hk.set_reg_stealer((char*)PanoramaMinimapRendererPtr, 16, (char*)&MinimapPixelBoundsManipulator, r::rcx);
     
-
+    MinimapBoundsInPixel_x = *(__int32*)((char*)MinimapPixelBounds__offset + 0xA);
+    MinimapBoundsInPixel_y = *(__int32*)((char*)MinimapPixelBounds__offset + 0xA + 7);
     C_DOTAPlayer_HeroIndexOffset = *(short*)((char*)C_DOTAPlayer_HeroIndexOffset_sign +2);
 
     hk.set_hook((char*)OnAddEntityFunc, 16, (char*)OnAddEntity, (char**)&OnAddEntityRet);
@@ -618,7 +548,7 @@ Address of signature = client.dll + 0x01EDA100
     //hk.set_reg_stealer((char*)InBattleCameraFunc, 11, (char*)&StolenVar, r::rcx);
     hk.set_reg_stealer_reverse((char*)WTGViewMatrix, 16, (char*)&fuckingMatrix, r::rax);
     //hk.set_reg_stealer((char*)WTGCParticleSystemMgr, 17, (char*)&CParticleSystemMgrPtr, r::rcx);
-    TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hkEndScene, (char**)&oEndScene);
+    //TrampoToBreak = hk.set_hook((char*)d3d9Device[42], 15, (char*)hk.ndScene, (char**)&oEndScene);
     hk.set_hook((char*)WTGSelectableUnitCollidedWithCursor, 14, (char*)&SelectableUnitCollidedWithCursor, (char**)&SelectableUnitCollidedWithCursor_Original);
     //(05.09.2021) 15 -> 14 (27.09.2021)
     hk.set_hook((char*)WTGCvarProcessor_main, 15, (char*)ConVarMainProcessor, (char**)&ConVarMainProcessor_orig);

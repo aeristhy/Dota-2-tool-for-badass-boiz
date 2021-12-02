@@ -1,17 +1,22 @@
-#pragma once
+п»ї#pragma once
 #include "GlobalVars.h"
-#include "../imgui/imgui.h"
-#include "../imgui/backends/imgui_impl_dx9.h"
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_dx11.h"
 #include "../imgui/backends/imgui_impl_win32.h"
+#include "vec2.h"
+#include "CDOTA_PanoramaMinimapRenderer.h"
+#include "D3D11Renderer.h"
 
-
-
-void DrawFilledRect11(int x, int y, int w, int h, D3DCOLOR color, IDirect3DDevice9* dev)
+void DrawFilledRect9(int x, int y, int w, int h, D3DCOLOR color, IDirect3DDevice9* dev)
 {
 	D3DRECT BarRect = { x, y, x + w, y + h };
 	dev->Clear(1, &BarRect, D3DCLEAR_TARGET | D3DCLEAR_TARGET, color, 0, 0);
 }
 
+void DrawFilledRect11(int x, int y, int w, int h, Color_class color, D3D11Renderer* dev)
+{
+	dev->FillRect(x,y,w,h, color);
+}
 
 
 bool WorldToScreen(D3DVECTOR pos, vec2* screen, float matrix[16], int windowWidth, int windowHeight)
@@ -27,8 +32,8 @@ engine2.dll+1BAAF2 - 48 89 8D E0000000     - mov [rbp+000000E0],rcx
 engine2.dll+1BAAF9 - 49 03 C6              - add rax,r14
 engine2.dll+1BAAFC - 48 8B D1              - mov rdx,rcx
 engine2.dll+1BAAFF - 48 8B C8              - mov rcx,rax
-engine2.dll+1BAB02 - 48 89 45 B0           - mov [rbp-50],rax //rax хранит указатель лишь одного класса стабильно rax+0x288==ViewMatrix
-engine2.dll+1BAB06 - E8 459FFFFF           - call engine2.dll+1B4A50 //вызывает функцию которая ниже---\
+engine2.dll+1BAB02 - 48 89 45 B0           - mov [rbp-50],rax //rax С…СЂР°РЅРёС‚ СѓРєР°Р·Р°С‚РµР»СЊ Р»РёС€СЊ РѕРґРЅРѕРіРѕ РєР»Р°СЃСЃР° СЃС‚Р°Р±РёР»СЊРЅРѕ rax+0x288==ViewMatrix
+engine2.dll+1BAB06 - E8 459FFFFF           - call engine2.dll+1B4A50 //РІС‹Р·С‹РІР°РµС‚ С„СѓРЅРєС†РёСЋ РєРѕС‚РѕСЂР°СЏ РЅРёР¶Рµ---\
 engine2.dll+1BAB0B - 48 8B 55 68           - mov rdx,[rbp+68]											|
 engine2.dll+1BAB0F - 44 8B CB              - mov r9d,ebx												|
 engine2.dll+1BAB12 - 48 8B 9D E0000000     - mov rbx,[rbp+000000E0]										|
@@ -37,7 +42,7 @@ engine2.dll+1BAB20 - 49 03 D6              - add rdx,r14												|
 																										|
 																										|
 																										|
-	Address of signature = engine2.dll + 0x002EE2D6<<<<<<<<<<<<<<<<-----------------------------------./ вот она, слева, да
+	Address of signature = engine2.dll + 0x002EE2D6<<<<<<<<<<<<<<<<-----------------------------------./ РІРѕС‚ РѕРЅР°, СЃР»РµРІР°, РґР°
 "\x0F\x11\x00\x0F\x11\x00\x00\x0F\x11\x00\x00\xC3", "xx?xx??xx??x"
 "0F 11 ? 0F 11 ? ? 0F 11 ? ? C3"
 
@@ -89,29 +94,52 @@ void WorldToMinimap(float* pos, vec2 * screen)
 	*/
 	auto q = MinimapBoundsManipulator->GetBoundsMax();
 	auto w = MinimapBoundsManipulator->GetBoundsMin();
+	auto PixelBounds = MinimapPixelBoundsManipulator->GetMinimapSizeInPixel();
 
-	/*w.x *= -1;
-	w.y *= -1;*/
+	if (w.x < 0.0)
+		w.x *= -1;
+	if (w.y < 0.0)
+		w.y *= -1;
 
-	auto r = (q.x * w.x);
-	float d = (pos[0]) / r;
-	//d *= 1.7;
-	//if (d < 0)
-	//	d *= -1;
-	float f = (pos[1]) / (q.y * w.y);
-	//if (f < 0)
-	//	f *= -1;
+	auto wx = w.x;
+	auto wy = w.y;
 
-	screen->x = d;
-	screen->y = f;
+
+	auto xsum = (q.x + wx);
+	auto ysum = (q.y + wy);
+
+	pos[0] += wx;
+	pos[1] += wy;
+
+
+	auto x = pos[0] / xsum;
+	auto y = pos[1] / ysum;
+
+	pos[0] -= wx;
+	pos[1] -= wy;
+
+	PixelBounds.x += x_minimap_size; //10
+	PixelBounds.y += y_minimap_size;
+
+
+	auto yboundtemp = PixelBounds.y;
+
+	x *= PixelBounds.x;
+	y = yboundtemp * (-y);
+
+	y += view.Height;
+	screen->x = x -(x_minimap_offset);
+	screen->y = y +(y_minimap_offset); //-20
 }
 
 
-void esp(LPDIRECT3DDEVICE9 pDevice)
+void esp(ID3D11DeviceContext* pContext, D3D11Renderer* renderer)
 {
 	
-	pDevice->GetViewport(&view);
-	
+	//pDevice->GetViewport(&view); rip (в•Ґп№Џв•Ґ)
+	unsigned int viewports_num = D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE;
+	pContext->RSGetViewports(&viewports_num, &view);
+
 	if (!LocalPlayer)
 	{
 		Sleep(0);
@@ -190,17 +218,30 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 						Modifiers[i][w] = Mod;
 						if (!memcmp(Mod->Name(), "modifier_truesight", 18))
 						{
-							DrawFilledRect11(screen.x, screen.y, 50, 50, quad_color, pDevice);
+							vec2 minimapper = { 0,0 };
+							if (TrueSightIndicator3DWorld)
+								DrawFilledRect11(screen.x, screen.y, 50, 50, Color_class(0xFF, 0x00, 0x00, 0xFF), renderer);
+							if (TrueSightIndicatorMinimap)
+							{
+								WorldToMinimap(ent->GetSleleton()->GetPos(), &minimapper);
+
+								DrawFilledRect11(minimapper.x, minimapper.y+5, 10, 5, Color_class(0xFF, 0x00, 0x00, 0xFF), renderer);
+							}
 						}
 					}
 
-					if (heroIsVisible)
+					if (SelfVisibeByEnemy && heroIsVisible)
 					{
-						DrawFilledRect11(screen.x, screen.y, 50, 25, quad_color2, pDevice);
+						if (SelfVisibleByEnemy3DWorld)
+							DrawFilledRect11(screen.x, screen.y, 50, 25, Color_class(0xFF, 0xFF, 0xFF, 0), renderer);
 #ifdef _DEBUG
 						vec2 minimapper = {0,0};
-						WorldToMinimap(ent->GetSleleton()->GetPos(), &minimapper);
-						DrawFilledRect11(minimapper.x,(view.Height - 260) + minimapper.y, 10, 5, quad_color2, pDevice);
+						if (SelfVisibleByEnemyOnMinimap)
+						{
+							WorldToMinimap(ent->GetSleleton()->GetPos(), &minimapper);
+
+							DrawFilledRect11(minimapper.x, minimapper.y, 10, 5, Color_class(0xFF, 0xFF, 0xFF, 0), renderer);
+						}
 #endif
 					}
 				}
@@ -233,7 +274,7 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 										rect.bottom += 15;
 										memset(CDString, 0, 100);
 										sprintf(CDString, "%s [%0.f] %0.f", nm, cd, max_cd);
-										font->DrawTextA(0, CDString, 100, &rect, 0, D3DCOLOR_ARGB(255, 0, 255, 0));
+										//font->DrawTextA(0, CDString, 100, &rect, 0, D3DCOLOR_ARGB(255, 0, 255, 0));
 
 									}
 								}
@@ -270,8 +311,18 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 						}
 						ImGui::TextColored(color, "%s\t%d/%d", HeroName, currentHealth, hero->GetMaxHealth());
 					}
-					if (TrueHero)
-						DrawFilledRect11(screen.x, screen.y - 10, 50, 10, 0xFF000000, pDevice);
+					if (TrueHero && heroIsVisible)
+					{
+						if (TrueHeroIndicator3DWorld)
+							DrawFilledRect11(screen.x, screen.y - 10, 50, 10, Color_class(0xFF, 0x11, 0xFF, 0x55), renderer);
+						if (TrueHeroIndicatorMinimap)
+						{
+							vec2 minimapper = { 0,0 };
+							WorldToMinimap(ent->GetSleleton()->GetPos(), &minimapper);
+
+							DrawFilledRect11(minimapper.x, minimapper.y, 10, 5, Color_class(0xFF, 0x11, 0xFF, 0x55), renderer);
+						}
+					}
 				}
 			}
 		}
@@ -315,9 +366,9 @@ void esp(LPDIRECT3DDEVICE9 pDevice)
 		if (screen.x && screen.y)
 			if (IsVisibleByTeam(xlam[i], DOTATeam_t::DOTA_TEAM_RADIANT) && IsVisibleByTeam(xlam[i], DOTATeam_t::DOTA_TEAM_DIRE))
 			{
-				DrawFilledRect11(rect.left, rect.top, 5, 5, D3DCOLOR_ARGB(255, 255, 0, 0), pDevice);
+				DrawFilledRect11(rect.left, rect.top, 5, 5, Color_class(255, 255, 0, 0), renderer);
 				
-				font->DrawTextA(0, xlamName, (INT)strlen(xlamName), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));//works fine
+				//font->DrawTextA(0, xlamName, (INT)strlen(xlamName), &rect, 0, D3DCOLOR_ARGB(255, 255, 0, 0));//works fine
 			}
 	}
 #endif
@@ -343,20 +394,20 @@ void OutputModifiers()
 #ifdef _DEBUG
 
 
-void DrawQuad3D(float q, float w, float e, LPDIRECT3DDEVICE9 pDevice)
-{
-	vec2 screen;
-	screen.x = 0;
-	screen.y = 0;
-	D3DVECTOR qwe;
-	qwe.x = q;
-	qwe.y = w;
-	qwe.z = e;
-	long long temp = fuckingMatrix + 0x288;
-	WorldToScreen(qwe, &screen, (float*)temp, view.Width, view.Height);
-	DrawFilledRect11(screen.x, screen.y, 5, 5, D3DCOLOR_ARGB(255, 0xAA, 0xAA, 0xEE), pDevice);
-
-}
+//void DrawQuad3D(float q, float w, float e, LPDIRECT3DDEVICE9 pDevice)
+//{
+//	vec2 screen;
+//	screen.x = 0;
+//	screen.y = 0;
+//	D3DVECTOR qwe;
+//	qwe.x = q;
+//	qwe.y = w;
+//	qwe.z = e;
+//	long long temp = fuckingMatrix + 0x288;
+//	WorldToScreen(qwe, &screen, (float*)temp, view.Width, view.Height);
+//	DrawFilledRect11(screen.x, screen.y, 5, 5, D3DCOLOR_ARGB(255, 0xAA, 0xAA, 0xEE), pDevice);
+//
+//}
 
 #endif
 

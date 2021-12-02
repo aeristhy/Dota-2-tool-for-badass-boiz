@@ -1,7 +1,7 @@
 #include <Windows.h>
 //#include <memory>
 //#include <iostream>
-
+#include "insreader.h"
 using namespace std;
 
 #define asm_ret 0xC3
@@ -23,6 +23,7 @@ using namespace std;
 
 #define hooks_max 50
 #define bytes_max 30
+
 
 
 enum r {
@@ -67,6 +68,8 @@ class connector {
 
 	//stack?
 	int slot = 0;
+
+	
 
 	template <typename... Args>
 	void __inline log(const char* txt, Args... a)
@@ -355,7 +358,7 @@ public:
 		return oWndProc;
 	}
 
-	int set_hook(char* address, int sz, char* callback_function, char** o)
+	int set_hook(char* address, int sz_14_min, char* callback_function, char** o)
 	{
 
 		GetSlot();
@@ -365,27 +368,27 @@ public:
 			log("\n!boolka");
 			return 0;
 		}
-		if (!saveOriginalCode(address, sz))
+		if (!saveOriginalCode(address, sz_14_min))
 		{
 			log("\n!saveOriginalCode()");
 			return 0;
 		}
 		original_code_address[slot] = address;
-		original_code_sz[slot] = sz;
+		original_code_sz[slot] = sz_14_min;
 
-		makeJump(address + sz, cave + cave_actual_offset);
+		makeJump(address + sz_14_min, cave + cave_actual_offset);
 		//Если код засейвили, то всё ок, и пора сохранить его размер
-		setVP(address, sz);
-		for (int i = 0; i < sz; i++)
+		setVP(address, sz_14_min);
+		for (int i = 0; i < sz_14_min; i++)
 			memset(address + i, 0x90, 1);
 		makeJump(cave + cave_actual_offset, address);
-		backVP(address, sz);
+		backVP(address, sz_14_min);
 		makeJump(callback_function, cave + cave_actual_offset);
 		cave_actual_offset += 14;
 
 		*o = cave + cave_actual_offset;
 		setOriginalCode();
-		makeJump(address + sz, cave + cave_actual_offset);
+		makeJump(address + sz_14_min, cave + cave_actual_offset);
 		cave_actual_offset += 14;
 
 		log("\n------------done-----------------");
@@ -394,6 +397,78 @@ public:
 
 		return slot;
 	}
+
+	//int hook_another_hook_reverse(char* address, int sz, char* callback_function, char** o, int extra_offset = 0)
+	//{
+	//	if (extra_offset != 0)
+	//		address += extra_offset;
+	//	GetSlot();
+	//	int offset = 0;
+	//	
+	//	__int64 another_hook_Address = 0; 
+	//	if (*address == (char)0xE9)
+	//	{
+	//		//relative x32 jump 5 bytes
+	//		another_hook_Address  = GetAddressFromInstruction((__int64)address, 1, 5);
+	//		offset = 5;
+
+	//	}
+	//	else
+	//		if (*(char*)(address + 1) == (char)0xFF && *(char*)(address + 2) == (char)0x25)
+	//		{
+	//			//absolute x64 jump 14 bytes
+	//			log("\nFF 25 hook is not supported. Good bye!");
+	//			Sleep(-1);
+	//		}
+
+
+	//	if (!boolka)
+	//	{
+	//		log("\n!boolka");
+	//		return 0;
+	//	}
+	//	if (!saveOriginalCode(address + offset, sz - offset))
+	//	{
+	//		log("\n!saveOriginalCode()");
+	//		return 0;
+	//	}
+	//	setVP(address, sz);
+	//	for (int i = 0; i < sz; i++)
+	//		memset(address + i, 0x90, 1);
+	//	backVP(address, sz);
+
+	//	sz -= offset;
+	//	original_code_address[slot] = address;
+	//	original_code_sz[slot] = sz;
+
+
+
+	//	makeJump(address + sz, cave + cave_actual_offset);
+	//	//Если код засейвили, то всё ок, и пора сохранить его размер
+	//	setVP(address, sz);
+	//	
+	//	makeJump(cave + cave_actual_offset, address);
+	//	backVP(address, sz);
+	//	
+	//	*o = cave + cave_actual_offset;
+	//	makeJump((char*)another_hook_Address, cave + cave_actual_offset);
+	//	cave_actual_offset += 14;
+
+	//	makeJump(callback_function, cave + cave_actual_offset);
+	//	cave_actual_offset += 14;
+
+	//	
+	//	setOriginalCode();
+
+	//	makeJump(address + sz + offset, cave + cave_actual_offset);
+	//	cave_actual_offset += 14;
+
+	//	log("\n------------done-----------------");
+
+
+
+	//	return slot;
+	//}
 
 	//your code->original_code
 	int set_reg_stealer(char* address, int sz, char* container, r RegToSteal)

@@ -119,9 +119,9 @@ struct Color2
 	}
 };
 
-struct Color
+struct Color_struct
 {
-	Color(unsigned char Red, unsigned char Green, unsigned char Blue, unsigned char Alpha = 255)
+	Color_struct(unsigned char Red, unsigned char Green, unsigned char Blue, unsigned char Alpha = 255)
 	{
 		RGBA[0] = Red;
 		RGBA[1] = Green;

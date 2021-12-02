@@ -128,7 +128,7 @@ namespace PatternFinder
 		auto s = patternBytes.size();
 		auto d = patternBytes.data();
 		auto var = sizeOfImage - s;
-		for (auto i = 0ll; i < var; ++i)
+		for (auto i = 0ll; i < (long long)var; ++i)
 		{
 			bool found = true;
 			for (auto j = 0ul; j < s; ++j)
