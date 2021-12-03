@@ -249,4 +249,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="imgui\test.txt">
+      <Filter>Файлы заголовков\callbacks</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
